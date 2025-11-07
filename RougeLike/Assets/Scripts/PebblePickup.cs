@@ -38,7 +38,7 @@ public class PebblePickup : MonoBehaviour
             );
 
             float dist = Vector3.Distance(transform.position, player.position);
-            if (dist < 0.25f)
+            if (dist < 0.75f)
             {
                 if (PebbleManager.Instance != null)
                     PebbleManager.Instance.AddPebbles(amount);
