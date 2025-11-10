@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 120192920319477680}
   - component: {fileID: 2666894576874617443}
   - component: {fileID: 4459339521161528545}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mushroom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -182,8 +182,13 @@ MonoBehaviour:
   speed: 3
   awakeDistance: 5
   stopDistance: 8
+  jumpForce: 5
+  jumpInterval: 3
+  knockbackForce: 10
+  attackCooldown: 1
   rb: {fileID: 120192920319477680}
   animator: {fileID: 4459339521161528545}
+  damage: 0
 --- !u!95 &4459339521161528545
 Animator:
   serializedVersion: 7

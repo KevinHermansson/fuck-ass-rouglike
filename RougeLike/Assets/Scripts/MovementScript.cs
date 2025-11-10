@@ -14,7 +14,7 @@ public class MovementScript : MonoBehaviour
     public float wallCheck = 0;
     public bool fancyGroundCheck;
     BoxCollider2D PlayerCollider;
-    
+
     private float knockbackTimer = 0f;
     private bool isKnockedBack = false;
 
@@ -47,8 +47,14 @@ public class MovementScript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && wallCheck >= 1)
         {
-            rb.linearVelocity = new Vector2(moveSpeed, rb.linearVelocity.y);
-        } if (Input.GetKey(KeyCode.S)){
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpHeight);
+        }
+        if (Input.GetKeyDown(KeyCode.Space) && fancyGroundCheck == true)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpHeight);
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
             dropThroughPlatform();
         }
 
@@ -75,7 +81,8 @@ public class MovementScript : MonoBehaviour
 
         rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
 
-        if (Input.GetKey(KeyCode.S)) {
+        if (Input.GetKey(KeyCode.S))
+        {
             dropThroughPlatform();
         }
     }
@@ -105,7 +112,8 @@ public class MovementScript : MonoBehaviour
             fancyGroundCheck = false;
     }
 
-    private IEnumerator DisablePlayerCollider(float disableTime){
+    private IEnumerator DisablePlayerCollider(float disableTime)
+    {
         PlayerCollider.enabled = false;
         yield return new WaitForSeconds(disableTime);
         PlayerCollider.enabled = true;
@@ -113,7 +121,8 @@ public class MovementScript : MonoBehaviour
 
     public void dropThroughPlatform()
     {
-        if (Input.GetKey(KeyCode.S) && fancyGroundCheck && PlayerCollider.enabled){
+        if (Input.GetKey(KeyCode.S) && fancyGroundCheck && PlayerCollider.enabled)
+        {
             StartCoroutine(DisablePlayerCollider(0.5f));
         }
     }
