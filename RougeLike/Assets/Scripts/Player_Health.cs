@@ -11,7 +11,7 @@ public class Player_Health : MonoBehaviour
     void Start()
     {
         health = maxHealth;
-        
+
         if (healthBar == null)
         {
             Debug.LogError("healthBar Image is not assigned in Inspector!");
@@ -34,7 +34,7 @@ public class Player_Health : MonoBehaviour
         health -= damageAmount;
         float fillValue = health / maxHealth;
         Debug.Log($"Player took {damageAmount} damage. Health: {health}, fillAmount: {fillValue}");
-        
+
         if (healthBar != null)
         {
             healthBar.fillAmount = fillValue;
