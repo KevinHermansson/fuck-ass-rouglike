@@ -136,5 +136,7 @@ public class MovementScript : MonoBehaviour
         Debug.Log($"Knockback applied! Velocity set to: {knockbackVelocity}");
     }
 
+    
+
 
 }
