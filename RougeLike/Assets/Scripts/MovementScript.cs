@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class MovementScript : MonoBehaviour
 {
@@ -10,13 +11,14 @@ public class MovementScript : MonoBehaviour
 
     public float groundCheck = 0;
     public float wallCheck = 0;
+    public bool fancyGroundCheck;
+    BoxCollider2D PlayerCollider;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        
-
+        PlayerCollider = GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame
@@ -54,7 +56,13 @@ public class MovementScript : MonoBehaviour
         }
 
         rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
+
+        if (Input.GetKey(KeyCode.S)) {
+            dropThroughPlatform();
+        }
     }
+
+
 
     // set groundCheck when colliding with objects tagged "Ground"
     private void OnCollisionEnter2D(Collision2D collision)
@@ -64,6 +72,9 @@ public class MovementScript : MonoBehaviour
 
         if (collision.collider.CompareTag("Wall"))
             wallCheck += 1;
+            
+        if (collision.collider.CompareTag("fancyPlatform"))
+            fancyGroundCheck = true;
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -73,6 +84,22 @@ public class MovementScript : MonoBehaviour
 
         if (collision.collider.CompareTag("Wall"))
             wallCheck -= 1;
+
+        if (collision.collider.CompareTag("fancyPlatform"))
+            fancyGroundCheck = false;
+    }
+
+    private IEnumerator DisablePlayerCollider(float disableTime){
+        PlayerCollider.enabled = false;
+        yield return new WaitForSeconds(disableTime);
+        PlayerCollider.enabled = true;
+    }
+
+    public void dropThroughPlatform()
+    {
+        if (Input.GetKey(KeyCode.S) && fancyGroundCheck && PlayerCollider.enabled){
+            StartCoroutine(DisablePlayerCollider(0.5f));
+        }
     }
 
 
