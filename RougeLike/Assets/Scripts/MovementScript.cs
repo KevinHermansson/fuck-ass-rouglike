@@ -32,7 +32,9 @@ public class MovementScript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && wallCheck >= 1)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpHeight);
+            rb.linearVelocity = new Vector2(moveSpeed, rb.linearVelocity.y);
+        } if (Input.GetKey(KeyCode.S)){
+            dropThroughPlatform();
         }
 
         bool left = Input.GetKey(KeyCode.A);
@@ -55,6 +57,7 @@ public class MovementScript : MonoBehaviour
             vx = 0f;
         }
 
+
         rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
 
         if (Input.GetKey(KeyCode.S)) {
@@ -68,13 +71,11 @@ public class MovementScript : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.CompareTag("Ground"))
-            groundCheck += 1;
-
-        if (collision.collider.CompareTag("Wall"))
-            wallCheck += 1;
-            
+            groundCheck = 1;
         if (collision.collider.CompareTag("fancyPlatform"))
             fancyGroundCheck = true;
+        if (collision.collider.CompareTag("Wall"))
+            wallCheck += 1;
     }
 
     private void OnCollisionExit2D(Collision2D collision)
