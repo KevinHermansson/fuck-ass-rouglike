@@ -6,6 +6,7 @@ public class MovementScript : MonoBehaviour
 {
     public float jumpHeight = 8;
     public float moveSpeed = 5;
+    public float knockbackDuration = 0.3f;
     public Rigidbody2D rb;
 
 
@@ -13,6 +14,9 @@ public class MovementScript : MonoBehaviour
     public float wallCheck = 0;
     public bool fancyGroundCheck;
     BoxCollider2D PlayerCollider;
+    
+    private float knockbackTimer = 0f;
+    private bool isKnockedBack = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -24,6 +28,17 @@ public class MovementScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Handle knockback timer
+        if (isKnockedBack)
+        {
+            knockbackTimer -= Time.deltaTime;
+            if (knockbackTimer <= 0)
+            {
+                isKnockedBack = false;
+            }
+            return; // Skip input during knockback
+        }
+
         // jump once when pressed
         if (Input.GetKeyDown(KeyCode.Space) && groundCheck >= 1)
         {
@@ -101,6 +116,15 @@ public class MovementScript : MonoBehaviour
         if (Input.GetKey(KeyCode.S) && fancyGroundCheck && PlayerCollider.enabled){
             StartCoroutine(DisablePlayerCollider(0.5f));
         }
+    }
+
+    // Public method to apply knockback from external scripts
+    public void ApplyKnockback(Vector2 knockbackVelocity)
+    {
+        rb.linearVelocity = knockbackVelocity;
+        isKnockedBack = true;
+        knockbackTimer = knockbackDuration;
+        Debug.Log($"Knockback applied! Velocity set to: {knockbackVelocity}");
     }
 
 
