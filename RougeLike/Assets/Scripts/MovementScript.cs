@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class MovementScript : MonoBehaviour
 {
@@ -8,12 +9,16 @@ public class MovementScript : MonoBehaviour
     public Rigidbody2D rb;
 
 
+    public float groundCheck = 1;
+    public bool fancyGroundCheck;
+    BoxCollider2D PlayerCollider;
     public float groundCheck = 0;
     public float wallCheck = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        PlayerCollider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         
 
@@ -30,6 +35,9 @@ public class MovementScript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && wallCheck >= 1)
         {
+            rb.linearVelocity = new Vector2(moveSpeed, rb.linearVelocity.y);
+        } if (Input.GetKey(KeyCode.S)){
+            dropThroughPlatform();
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpHeight);
         }
 
@@ -53,6 +61,7 @@ public class MovementScript : MonoBehaviour
             vx = 0f;
         }
 
+
         rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
     }
 
@@ -60,6 +69,9 @@ public class MovementScript : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.CompareTag("Ground"))
+            groundCheck = 1;
+        if (collision.collider.CompareTag("fancyPlatform"))
+            fancyGroundCheck = true;
             groundCheck += 1;
 
         if (collision.collider.CompareTag("Wall"))
@@ -69,6 +81,22 @@ public class MovementScript : MonoBehaviour
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.collider.CompareTag("Ground"))
+            groundCheck = 0;
+        if (collision.collider.CompareTag("fancyPlatform"))
+            fancyGroundCheck = false;
+    }
+
+    private IEnumerator DisablePlayerCollider(float disableTime){
+        PlayerCollider.enabled = false;
+        yield return new WaitForSeconds(disableTime);
+        PlayerCollider.enabled = true;
+    }
+
+    public void dropThroughPlatform()
+    {
+        if (Input.GetKey(KeyCode.S) && fancyGroundCheck && PlayerCollider.enabled){
+            StartCoroutine(DisablePlayerCollider(0.5f));
+        }
             groundCheck -= 1;
 
         if (collision.collider.CompareTag("Wall"))
