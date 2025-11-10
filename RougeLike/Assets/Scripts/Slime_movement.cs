@@ -9,7 +9,7 @@ public class Slime_movement : MonoBehaviour
     public float attackCooldown = 3f;
     public Rigidbody2D rb;
     public Animator animator;
-    
+
     public float damage = 5f;
 
     Transform player;
@@ -52,7 +52,7 @@ public class Slime_movement : MonoBehaviour
     public void OnAttackComplete()
     {
         Debug.Log("Slime OnAttackComplete called!");
-        
+
         if (player == null)
         {
             Debug.LogWarning("Player is null!");
@@ -61,30 +61,30 @@ public class Slime_movement : MonoBehaviour
 
         float distance = Vector2.Distance(rb.position, (Vector2)player.position);
         Debug.Log($"Distance to player: {distance}");
-        
+
         // Only apply knockback if player is still in range
         if (distance <= 2f)
         {
             MovementScript playerMovement = player.GetComponent<MovementScript>();
-             
+
             if (playerMovement != null)
             {
                 Vector2 knockbackDirection = ((Vector2)player.position - rb.position).normalized;
-                Vector2 knockbackVelocity = new Vector2(knockbackDirection.x * knockbackForce, 0);
+                Vector2 knockbackVelocity = new Vector2(knockbackDirection.x * knockbackForce, 0f);
 
                 Debug.Log($"Applying knockback: {knockbackVelocity}, Direction: {knockbackDirection}, Force: {knockbackForce}");
                 playerMovement.ApplyKnockback(knockbackVelocity);
             }
 
             TakeDamage();
-            
-           
+
+
         }
         else
         {
             Debug.Log("Player too far for knockback!");
         }
-        
+
         // Reset attack cooldown
         attackTimer = attackCooldown;
     }
@@ -99,15 +99,15 @@ public class Slime_movement : MonoBehaviour
         bool isAttack = Vector2.Distance(rb.position, (Vector2)player.position) <= 2f;
         animator.SetBool("isAttack", isAttack);
     }
-    
+
     private void TakeDamage()
     {
         Player_Health playerHealth = player.GetComponent<Player_Health>();
-            if (playerHealth != null)
-            {
-                damage = 5;
-                playerHealth.TakeDamage(damage);
-            }
+        if (playerHealth != null)
+        {
+            damage = 5;
+            playerHealth.TakeDamage(damage);
+        }
     }
 
     void FixedUpdate()
@@ -120,16 +120,16 @@ public class Slime_movement : MonoBehaviour
         if (!isChasing && distance <= awakeDistance)
         {
             isChasing = true;
-            
+
             if (animator != null)
                 animator.SetBool("isMoving", true);
         }
-        
+
         // Stop chasing if player is beyond stop distance
         if (isChasing && distance > stopDistance)
         {
             isChasing = false;
-            
+
             if (animator != null)
                 animator.SetBool("isMoving", false);
         }
@@ -141,9 +141,9 @@ public class Slime_movement : MonoBehaviour
         if (isChasing && !shouldStopMoving)
         {
             float directionX = ((Vector2)player.position - rb.position).normalized.x;
-            
+
             rb.linearVelocity = new Vector2(directionX * speed, rb.linearVelocity.y);
-            
+
             // Rotate based on movement direction
             if (directionX < 0)
             {

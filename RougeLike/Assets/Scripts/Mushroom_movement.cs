@@ -78,7 +78,7 @@ public class Mushroom_movement : MonoBehaviour
             if (playerMovement != null)
             {
                 Vector2 knockbackDirection = ((Vector2)player.position - rb.position).normalized;
-                Vector2 knockbackVelocity = new Vector2(knockbackDirection.x * knockbackForce, 0);
+                Vector2 knockbackVelocity = new Vector2(knockbackDirection.x * knockbackForce, 0f);
 
                 Debug.Log($"Applying knockback: {knockbackVelocity}, Direction: {knockbackDirection}, Force: {knockbackForce}");
                 playerMovement.ApplyKnockback(knockbackVelocity);
