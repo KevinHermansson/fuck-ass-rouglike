@@ -5,13 +5,15 @@ public class FlyingBat_movement : MonoBehaviour
     public float speed = 3f;
     public float edgeBuffer = 1f; // Distance from camera edge to turn around
     public GameObject stonePrefab; // Assign the stone prefab in the Inspector
-    public float dropInterval = 3f; // Time between stone drops in seconds
+    public float minDropInterval = 2f; // Minimum time between stone drops
+    public float maxDropInterval = 5f; // Maximum time between stone drops
     
     private Camera mainCamera;
     private bool movingRight = true;
     private float leftBound;
     private float rightBound;
     private float dropTimer = 0f;
+    private float currentDropInterval;
 
     public Rigidbody2D rb;
 
@@ -26,8 +28,54 @@ public class FlyingBat_movement : MonoBehaviour
         }
         
         rb = GetComponent<Rigidbody2D>();
+        
+        if (rb == null)
+        {
+        }
+        
+        // Make sure Rigidbody2D is set to Dynamic for collision detection
+        if (rb != null && rb.bodyType != RigidbodyType2D.Dynamic)
+        {
+          
+        }
+        
+        // Check if bat has a collider
+        Collider2D collider = GetComponent<Collider2D>();
+        if (collider == null)
+        {
+            collider = gameObject.AddComponent<BoxCollider2D>();
+        }
+        
+        // Ignore collisions with all other enemies (including other bats)
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy != gameObject) // Don't ignore collision with self
+            {
+                Collider2D enemyCollider = enemy.GetComponent<Collider2D>();
+                if (enemyCollider != null && collider != null)
+                {
+                    Physics2D.IgnoreCollision(collider, enemyCollider);
+                }
+            }
+        }
+        
+        // Ignore collisions with all stones
+        GameObject[] stones = GameObject.FindGameObjectsWithTag("Stone");
+        foreach (GameObject stone in stones)
+        {
+            Collider2D stoneCollider = stone.GetComponent<Collider2D>();
+            if (stoneCollider != null && collider != null)
+            {
+                Physics2D.IgnoreCollision(collider, stoneCollider);
+            }
+        }
+        
         // Calculate camera bounds in world space
         UpdateCameraBounds();
+        
+        // Set initial random drop interval
+        currentDropInterval = Random.Range(minDropInterval, maxDropInterval);
     }
 
     void FixedUpdate()
@@ -63,15 +111,23 @@ public class FlyingBat_movement : MonoBehaviour
 
         // Handle stone dropping timer
         dropTimer += Time.fixedDeltaTime;
-        if (dropTimer >= dropInterval)
+        if (dropTimer >= currentDropInterval)
         {
             DropStone();
             dropTimer = 0f;
+            // Set new random interval for next drop
+            currentDropInterval = Random.Range(minDropInterval, maxDropInterval);
         }
     }
     
     private void UpdateCameraBounds()
     {
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+            if (mainCamera == null) return; // Still null, exit
+        }
+        
         // Get camera bounds at the bat's Y position
         float batY = transform.position.y;
         float camDistance = mainCamera.transform.position.z - batY;
@@ -83,15 +139,32 @@ public class FlyingBat_movement : MonoBehaviour
         rightBound = rightEdge.x - edgeBuffer;
     }
 
-    // Detect collision and change direction
+    
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Change direction when hitting something
-        movingRight = !movingRight;
-        Debug.Log($"Bat collided with {collision.gameObject.name}, changing direction!");
+        Debug.Log($"Bat collided with: {collision.gameObject.name}, Tag: '{collision.gameObject.tag}'");
+        
+        string tag = collision.gameObject.tag;
+        
+        // Ignore collisions with enemies completely
+        if (tag == "enemy")
+        {
+            Debug.Log("Bat collided with enemy, ignoring...");
+            return;
+        }
+         
+        if (tag == "fancyPlatform" || tag == "Wall")
+        {
+            movingRight = !movingRight;
+            Debug.Log($"Bat changed direction! Now moving right: {movingRight}");
+            
+            // Move bat slightly away from collision to prevent getting stuck
+            Vector2 pushDirection = movingRight ? Vector2.right : Vector2.left;
+            rb.MovePosition(rb.position + pushDirection * 0.2f);
+        }
     }
 
-    // Function to spawn a stone sprite
+   
     public void DropStone()
     {
         if (stonePrefab == null)
@@ -101,8 +174,18 @@ public class FlyingBat_movement : MonoBehaviour
         }
 
         // Spawn stone right below the bat
-        Vector3 dropPosition = transform.position + Vector3.down * 0.5f; // Adjust offset as needed
+        Vector3 dropPosition = transform.position + Vector3.down * 0.9f; // Adjust offset as needed
         GameObject stone = Instantiate(stonePrefab, dropPosition, Quaternion.identity);
+        
+        // Ignore collision between this bat and the newly spawned stone
+        Collider2D batCollider = GetComponent<Collider2D>();
+        Collider2D stoneCollider = stone.GetComponent<Collider2D>();
+        
+        if (batCollider != null && stoneCollider != null)
+        {
+            Physics2D.IgnoreCollision(batCollider, stoneCollider);
+        }
+        
         Debug.Log("Stone dropped!");
     }
 }

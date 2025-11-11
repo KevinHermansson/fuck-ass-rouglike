@@ -3,15 +3,22 @@ using UnityEngine;
 public class Stone_Drop : MonoBehaviour
 {
     public float dropSpeed = 5f; 
-    public int damage = 10; 
-    
+    public int damage = 10;
+
 
     private Rigidbody2D rb; 
+    Transform player;
+
+    
     private float spawnTime;
 
     void Start()
     {
         spawnTime = Time.time;
+
+        GameObject p = GameObject.FindWithTag("Player");
+        if (p != null)
+            player = p.transform;
         
        
         rb = GetComponent<Rigidbody2D>();
@@ -24,23 +31,37 @@ public class Stone_Drop : MonoBehaviour
         // Säkerställ att Rigidbody2D är korrekt konfigurerad
         rb.gravityScale = 0f;
         rb.bodyType = RigidbodyType2D.Dynamic;
-        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous; // Viktigt för snabba objekt!
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionX; // Lås rotation och X-position
         rb.linearVelocity = Vector2.down * dropSpeed;
 
-        // Kolla om stenen har en Collider2D
+        
         Collider2D collider = GetComponent<Collider2D>();
         if (collider == null)
         {
-            BoxCollider2D boxCollider = gameObject.AddComponent<BoxCollider2D>();
-            boxCollider.size = new Vector2(0.5f, 0.5f); // Sätt en standardstorlek
+            collider = gameObject.AddComponent<BoxCollider2D>();
+        }
+        
+        // Ignore collisions with all enemies
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            Collider2D enemyCollider = enemy.GetComponent<Collider2D>();
+            if (enemyCollider != null && collider != null)
+            {
+                Physics2D.IgnoreCollision(collider, enemyCollider);
+            }
         }
 
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        // Förstör stenen om den lever för länge (säkerhetsnät)
-       
+        // Keep stone falling at constant speed (won't be affected by collisions)
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.down * dropSpeed;
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -49,13 +70,40 @@ public class Stone_Drop : MonoBehaviour
 
         // Kolla om stenen träffar marken (flera möjliga taggar)
         string tag = collision.gameObject.tag;
-        if (tag == "Ground" || tag == "fancyPlatform" || tag == "Untagged")
+        
+        // Check if stone hits the ground
+        if (tag == "Ground" || tag == "fancyPlatform")
         {
-
-            Destroy(gameObject); // Förstör stenen
+            Destroy(gameObject); 
             return;
         }
-
         
+        // Check if stone hits the player
+        if (tag == "Player")
+        {
+            TakeDamage();
+            Destroy(gameObject); 
+            return;
+        }
+    }
+    
+    private void TakeDamage()
+    {
+        if (player == null)
+        {
+            // Try to find player again
+            GameObject p = GameObject.FindWithTag("Player");
+            if (p != null)
+                player = p.transform;
+            else
+                return; // Still no player found, exit
+        }
+        
+        Player_Health playerHealth = player.GetComponent<Player_Health>();
+        if (playerHealth != null)
+        {
+            damage = 15;
+            playerHealth.TakeDamage(damage);
+        }
     }
 }
