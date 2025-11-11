@@ -107,7 +107,7 @@ public class MovementScript : MonoBehaviour
     public void dropThroughPlatform()
     {
         if (Input.GetKey(KeyCode.S) && fancyGroundCheck && PlayerCollider.enabled)
-            StartCoroutine(DisablePlayerCollider(0.5f));
+            StartCoroutine(DisablePlayerCollider(0.40f));
     }
 
     // UPDATED: additive knockback
