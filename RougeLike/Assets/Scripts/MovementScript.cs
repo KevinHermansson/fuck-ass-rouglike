@@ -22,6 +22,17 @@ public class MovementScript : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         PlayerCollider = GetComponent<BoxCollider2D>();
+
+        // Ignore collisions with all enemies
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            Collider2D enemyCollider = enemy.GetComponent<Collider2D>();
+            if (enemyCollider != null && PlayerCollider != null)
+            {
+                Physics2D.IgnoreCollision(PlayerCollider, enemyCollider);
+            }
+        }
     }
 
     void Update()

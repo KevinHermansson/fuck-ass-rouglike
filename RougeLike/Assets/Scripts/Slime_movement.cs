@@ -30,6 +30,31 @@ public class Slime_movement : MonoBehaviour
 
         if (rb != null)
             rb.linearVelocity = Vector2.zero;
+
+        // Ignore collisions with all other enemies and player
+        Collider2D collider = GetComponent<Collider2D>();
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy != gameObject) // Don't ignore collision with self
+            {
+                Collider2D enemyCollider = enemy.GetComponent<Collider2D>();
+                if (enemyCollider != null && collider != null)
+                {
+                    Physics2D.IgnoreCollision(collider, enemyCollider);
+                }
+            }
+        }
+
+        // Ignore collision with player
+        if (p != null)
+        {
+            Collider2D playerCollider = p.GetComponent<Collider2D>();
+            if (playerCollider != null && collider != null)
+            {
+                Physics2D.IgnoreCollision(collider, playerCollider);
+            }
+        }
     }
 
     void Update()

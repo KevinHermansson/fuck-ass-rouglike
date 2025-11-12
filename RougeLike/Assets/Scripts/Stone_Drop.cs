@@ -53,6 +53,17 @@ public class Stone_Drop : MonoBehaviour
             }
         }
 
+        // Ignore collisions with all bullets
+        GameObject[] bullets = GameObject.FindGameObjectsWithTag("Bullet");
+        foreach (GameObject bullet in bullets)
+        {
+            Collider2D bulletCollider = bullet.GetComponent<Collider2D>();
+            if (bulletCollider != null && collider != null)
+            {
+                Physics2D.IgnoreCollision(collider, bulletCollider);
+            }
+        }
+
     }
 
     void FixedUpdate()

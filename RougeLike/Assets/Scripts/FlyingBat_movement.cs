@@ -59,6 +59,17 @@ public class FlyingBat_movement : MonoBehaviour
                 }
             }
         }
+
+        // Ignore collision with player
+        GameObject p = GameObject.FindWithTag("Player");
+        if (p != null)
+        {
+            Collider2D playerCollider = p.GetComponent<Collider2D>();
+            if (playerCollider != null && collider != null)
+            {
+                Physics2D.IgnoreCollision(collider, playerCollider);
+            }
+        }
         
         // Ignore collisions with all stones
         GameObject[] stones = GameObject.FindGameObjectsWithTag("Stone");
