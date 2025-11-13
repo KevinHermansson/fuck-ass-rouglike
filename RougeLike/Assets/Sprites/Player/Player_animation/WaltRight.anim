@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Corn_shoot
+  m_Name: WaltRight
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,11 +21,11 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: 3704055304016855527, guid: 4e6fc8efab67b484f8d2da50525dab08, type: 3}
+      value: {fileID: -3765932471221871395, guid: fc4355b23cfedde42813007c0e9eacd9, type: 3}
     - time: 0.14285715
-      value: {fileID: -2132260037848376413, guid: 55043b7802c9f0944b9c04ecae5bb093, type: 3}
+      value: {fileID: -4053668666973006060, guid: fc4355b23cfedde42813007c0e9eacd9, type: 3}
     - time: 0.2857143
-      value: {fileID: 4483504832982471387, guid: 155d04ce1dd99244588d007acd4b43ed, type: 3}
+      value: {fileID: -3765932471221871395, guid: fc4355b23cfedde42813007c0e9eacd9, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -48,9 +48,9 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: 3704055304016855527, guid: 4e6fc8efab67b484f8d2da50525dab08, type: 3}
-    - {fileID: -2132260037848376413, guid: 55043b7802c9f0944b9c04ecae5bb093, type: 3}
-    - {fileID: 4483504832982471387, guid: 155d04ce1dd99244588d007acd4b43ed, type: 3}
+    - {fileID: -3765932471221871395, guid: fc4355b23cfedde42813007c0e9eacd9, type: 3}
+    - {fileID: -4053668666973006060, guid: fc4355b23cfedde42813007c0e9eacd9, type: 3}
+    - {fileID: -3765932471221871395, guid: fc4355b23cfedde42813007c0e9eacd9, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}

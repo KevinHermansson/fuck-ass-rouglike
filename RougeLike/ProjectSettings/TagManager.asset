@@ -8,6 +8,7 @@ TagManager:
   - Wall
   - fancyPlatform
   - enemy
+  - Bullet
   layers:
   - Default
   - TransparentFX

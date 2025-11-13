@@ -8,6 +8,7 @@ public class MovementScript : MonoBehaviour
     public float moveSpeed = 5;
     public float knockbackDuration = 0.3f;
     public Rigidbody2D rb;
+    public Animator animator;
 
     public float groundCheck = 0;
     public float wallCheck = 0;
@@ -22,6 +23,7 @@ public class MovementScript : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         PlayerCollider = GetComponent<BoxCollider2D>();
+        animator = GetComponent<Animator>();
 
         // Ignore collisions with all enemies
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
@@ -69,12 +71,33 @@ public class MovementScript : MonoBehaviour
         if (left && !right)
         {
             inputVX = -moveSpeed;
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            
+            // Set animator parameters for moving left
+            if (animator != null)
+            {
+                animator.SetBool("MovingLeft", true);
+                animator.SetBool("MovingRight", false);
+            }
         }
         else if (right && !left)
         {
             inputVX = moveSpeed;
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            
+            // Set animator parameters for moving right
+            if (animator != null)
+            {
+                animator.SetBool("MovingLeft", false);
+                animator.SetBool("MovingRight", true);
+            }
+        }
+        else
+        {
+            // Player is not moving (standing still)
+            if (animator != null)
+            {
+                animator.SetBool("MovingLeft", false);
+                animator.SetBool("MovingRight", false);
+            }
         }
 
         // combine input with knockback additive x

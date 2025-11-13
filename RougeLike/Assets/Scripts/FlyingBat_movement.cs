@@ -72,7 +72,7 @@ public class FlyingBat_movement : MonoBehaviour
         }
         
         // Ignore collisions with all stones
-        GameObject[] stones = GameObject.FindGameObjectsWithTag("Stone");
+        GameObject[] stones = GameObject.FindGameObjectsWithTag("Bullet");
         foreach (GameObject stone in stones)
         {
             Collider2D stoneCollider = stone.GetComponent<Collider2D>();
