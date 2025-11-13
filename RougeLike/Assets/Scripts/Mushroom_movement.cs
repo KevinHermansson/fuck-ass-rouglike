@@ -36,6 +36,31 @@ public class Mushroom_movement : MonoBehaviour
 
         if (rb != null)
             rb.linearVelocity = Vector2.zero;
+
+        // Ignore collisions with all other enemies and player
+        Collider2D collider = GetComponent<Collider2D>();
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy != gameObject) // Don't ignore collision with self
+            {
+                Collider2D enemyCollider = enemy.GetComponent<Collider2D>();
+                if (enemyCollider != null && collider != null)
+                {
+                    Physics2D.IgnoreCollision(collider, enemyCollider);
+                }
+            }
+        }
+
+        // Ignore collision with player
+        if (p != null)
+        {
+            Collider2D playerCollider = p.GetComponent<Collider2D>();
+            if (playerCollider != null && collider != null)
+            {
+                Physics2D.IgnoreCollision(collider, playerCollider);
+            }
+        }
     }
 
     void Update()
@@ -69,8 +94,12 @@ public class Mushroom_movement : MonoBehaviour
         float distance = Vector2.Distance(rb.position, (Vector2)player.position);
         Debug.Log($"Distance to player: {distance}");
 
-        // Only apply knockback if player is still in range
-        if (distance <= 2f)
+        // Check if player is above the mushroom
+        float yDifference = player.position.y - transform.position.y;
+        bool playerIsAbove = yDifference > 0.5f; // 0.5 is threshold
+
+        // Only apply knockback and damage if player is still in range AND not above
+        if (distance <= 2f && !playerIsAbove)
         {
             MovementScript playerMovement = player.GetComponent<MovementScript>();
             Player_Health playerHealth = player.GetComponent<Player_Health>();
@@ -98,6 +127,10 @@ public class Mushroom_movement : MonoBehaviour
             {
                 Debug.LogWarning("Player has no Player_Health component!");
             }
+        }
+        else if (playerIsAbove)
+        {
+            Debug.Log("Player is above mushroom - no damage dealt!");
         }
         else
         {
@@ -130,10 +163,14 @@ public class Mushroom_movement : MonoBehaviour
     private void HandleAnimation(Rigidbody2D rb, Transform player)
     {
         bool isMoving = rb.linearVelocity.x != 0 && !animator.GetBool("isAttack");
-
         animator.SetBool("isMoving", isMoving);
 
-        bool isAttack = Vector2.Distance(rb.position, (Vector2)player.position) <= 2f;
+        // Check if player is above
+        float yDifference = player.position.y - transform.position.y;
+        bool playerIsAbove = yDifference > 0.5f;
+
+        // Only trigger attack if player is in range AND not above
+        bool isAttack = Vector2.Distance(rb.position, (Vector2)player.position) <= 2f && !playerIsAbove;
         animator.SetBool("isAttack", isAttack);
     }
 

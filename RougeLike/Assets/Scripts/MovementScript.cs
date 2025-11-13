@@ -22,6 +22,17 @@ public class MovementScript : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         PlayerCollider = GetComponent<BoxCollider2D>();
+
+        // Ignore collisions with all enemies
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            Collider2D enemyCollider = enemy.GetComponent<Collider2D>();
+            if (enemyCollider != null && PlayerCollider != null)
+            {
+                Physics2D.IgnoreCollision(PlayerCollider, enemyCollider);
+            }
+        }
     }
 
     void Update()
@@ -107,7 +118,7 @@ public class MovementScript : MonoBehaviour
     public void dropThroughPlatform()
     {
         if (Input.GetKey(KeyCode.S) && fancyGroundCheck && PlayerCollider.enabled)
-            StartCoroutine(DisablePlayerCollider(0.5f));
+            StartCoroutine(DisablePlayerCollider(0.40f));
     }
 
     // UPDATED: additive knockback
