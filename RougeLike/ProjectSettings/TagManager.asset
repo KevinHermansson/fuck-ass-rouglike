@@ -9,6 +9,7 @@ TagManager:
   - fancyPlatform
   - enemy
   - Bullet
+  - Logic
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - UI
   - Player
   - Enemy
-  - 
+  - NPC
   - 
   - 
   - 
