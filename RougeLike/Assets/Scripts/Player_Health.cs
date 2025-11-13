@@ -1,16 +1,22 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class Player_Health : MonoBehaviour
 {
     public float health = 100;
     public float maxHealth = 100;
     public Image healthBar;
+    public float flashDuration = 0.1f;
+    public Color flashColor = new Color(1f, 0f, 0f, 0.5f); // Transparent red
+
+    private SpriteRenderer spriteRenderer;
 
 
     void Start()
     {
         health = maxHealth;
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (healthBar == null)
         {
@@ -40,10 +46,24 @@ public class Player_Health : MonoBehaviour
             healthBar.fillAmount = fillValue;
         }
 
+        // Trigger damage flash
+        if (spriteRenderer != null)
+        {
+            StartCoroutine(DamageFlash());
+        }
+
         if (health <= 0)
         {
             Die();
         }
+    }
+
+    IEnumerator DamageFlash()
+    {
+        Color originalColor = spriteRenderer.color;
+        spriteRenderer.color = flashColor;
+        yield return new WaitForSeconds(flashDuration);
+        spriteRenderer.color = originalColor;
     }
 
     void Die()
