@@ -41,6 +41,12 @@ public class Enemy_Health : MonoBehaviour
 
     void Update()
     {
+        // Debug: Press K to take 1 damage
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            TakeDamage(1);
+        }
+
         // clamp health between 0 and maxHealth
         health = Mathf.Clamp(health, 0, maxHealth);
 
