@@ -4,37 +4,67 @@ using System;
 [CreateAssetMenu(menuName = "Inventory/RegularInventory")]
 public class RegularInventory : ScriptableObject
 {
-    [SerializeField] private ItemBase[] slots;
+    public const int Capacity = 6;
+    [SerializeField] private ItemBase[] slots = new ItemBase[Capacity];
+    [SerializeField] private int selectedIndex = 0;
+
     public event Action OnChanged;
 
-    public void Init(int capacity)
+    public int SelectedIndex
     {
-        slots = new ItemBase[Mathf.Max(1, capacity)];
-        OnChanged?.Invoke();
+        get => selectedIndex;
+        set
+        {
+            selectedIndex = Mathf.Clamp(value, 0, Capacity - 1);
+            OnChanged?.Invoke();
+        }
     }
 
-    public int Capacity => slots?.Length ?? 0;
     public ItemBase GetAt(int index) => (index >= 0 && index < Capacity) ? slots[index] : null;
 
-    public bool TryAdd(ItemBase item)
+    public bool HasEmptySlot(out int emptyIndex)
     {
-        if (item == null || item.Category != ItemCategory.Regular) return false;
         for (int i = 0; i < Capacity; i++)
         {
             if (slots[i] == null)
             {
-                slots[i] = item;
-                OnChanged?.Invoke();
+                emptyIndex = i;
                 return true;
             }
         }
+        emptyIndex = -1;
         return false;
+    }
+
+    public void AddOrReplace(ItemBase newItem, out ItemBase replaced)
+    {
+        if (newItem == null || newItem.Category != ItemCategory.Regular) { replaced = null; return; }
+
+        if (HasEmptySlot(out int idx))
+        {
+            slots[idx] = newItem;
+            replaced = null;
+        }
+        else
+        {
+            replaced = slots[selectedIndex];
+            slots[selectedIndex] = newItem;
+        }
+
+        OnChanged?.Invoke();
     }
 
     public void RemoveAt(int index)
     {
         if (index < 0 || index >= Capacity) return;
         slots[index] = null;
+        OnChanged?.Invoke();
+    }
+
+    public void Clear()
+    {
+        for (int i = 0; i < Capacity; i++) slots[i] = null;
+        selectedIndex = 0;
         OnChanged?.Invoke();
     }
 }
