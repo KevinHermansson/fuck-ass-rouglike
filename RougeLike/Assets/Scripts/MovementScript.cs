@@ -13,7 +13,11 @@ public class MovementScript : MonoBehaviour
     public float groundCheck = 0;
     public float wallCheck = 0;
     public bool fancyGroundCheck;
+    public BoxCollider2D feetTrigger; // Assign the feet trigger collider in Inspector
     BoxCollider2D PlayerCollider;
+    
+    private bool feetTouchingGround = false;
+    private bool feetTouchingPlatform = false;
 
     // CHANGED: remove isKnockedBack gating, use additive knockback
     private float knockbackTimer = 0f;
@@ -39,6 +43,9 @@ public class MovementScript : MonoBehaviour
 
     void Update()
     {
+        // Check every frame if feet collider is touching ground or platform
+        CheckFeetCollider();
+
         // decay knockback
         if (knockbackTimer > 0f)
         {
@@ -108,39 +115,125 @@ public class MovementScript : MonoBehaviour
             dropThroughPlatform();
     }
 
-    // set groundCheck when colliding with objects tagged "Ground"
+    void CheckFeetCollider()
+    {
+        if (feetTrigger == null) return;
+
+        // Check if feet collider is overlapping with Ground
+        Collider2D[] groundColliders = Physics2D.OverlapBoxAll(
+            feetTrigger.bounds.center,
+            feetTrigger.bounds.size,
+            0f
+        );
+
+        bool touchingGround = false;
+        bool touchingPlatform = false;
+
+        foreach (Collider2D col in groundColliders)
+        {
+            if (col == feetTrigger) continue; // Skip self
+
+            if (col.CompareTag("Ground"))
+            {
+                touchingGround = true;
+            }
+
+            if (col.CompareTag("fancyPlatform"))
+            {
+                touchingPlatform = true;
+            }
+        }
+
+        // Update groundCheck based on what feet are touching
+        if (touchingGround || touchingPlatform)
+        {
+            groundCheck = 1;
+        }
+        else
+        {
+            groundCheck = 0;
+        }
+
+        // Update fancyGroundCheck
+        fancyGroundCheck = touchingPlatform;
+    }
+
+    // Trigger detection for feet collider (used for ground detection)
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // Check if this trigger is the feet trigger
+        if (feetTrigger != null && other != feetTrigger)
+        {
+            if (other.CompareTag("Ground"))
+            {
+                feetTouchingGround = true;
+                groundCheck = 1;
+            }
+            
+            if (other.CompareTag("fancyPlatform"))
+            {
+                feetTouchingPlatform = true;
+                fancyGroundCheck = true;
+                groundCheck = 1;
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        // Check if this trigger is the feet trigger
+        if (feetTrigger != null && other != feetTrigger)
+        {
+            if (other.CompareTag("Ground"))
+            {
+                feetTouchingGround = false;
+                groundCheck = 0;
+            }
+            
+            if (other.CompareTag("fancyPlatform"))
+            {
+                feetTouchingPlatform = false;
+                fancyGroundCheck = false;
+                groundCheck = 0;
+            }
+        }
+    }
+
+    // set wallCheck when colliding with objects tagged "Wall"
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.CompareTag("Ground"))
-            groundCheck = 1;
-        if (collision.collider.CompareTag("fancyPlatform"))
-            fancyGroundCheck = true;
         if (collision.collider.CompareTag("Wall"))
             wallCheck += 1;
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.collider.CompareTag("Ground"))
-            groundCheck -= 1;
-
         if (collision.collider.CompareTag("Wall"))
             wallCheck -= 1;
-
-        if (collision.collider.CompareTag("fancyPlatform"))
-            fancyGroundCheck = false;
     }
 
     private IEnumerator DisablePlayerCollider(float disableTime)
     {
-        PlayerCollider.enabled = false;
+        // Temporarily disable both the feet trigger AND main collider to allow dropping through
+        if (feetTrigger != null)
+            feetTrigger.enabled = false;
+        
+        if (PlayerCollider != null)
+            PlayerCollider.enabled = false;
+        
         yield return new WaitForSeconds(disableTime);
-        PlayerCollider.enabled = true;
+        
+        if (feetTrigger != null)
+            feetTrigger.enabled = true;
+        
+        if (PlayerCollider != null)
+            PlayerCollider.enabled = true;
     }
 
     public void dropThroughPlatform()
     {
-        if (Input.GetKey(KeyCode.S) && fancyGroundCheck && PlayerCollider.enabled)
+        bool canDrop = (feetTrigger != null ? feetTrigger.enabled : true) && (PlayerCollider != null ? PlayerCollider.enabled : true);
+        if (Input.GetKey(KeyCode.S) && fancyGroundCheck && canDrop)
             StartCoroutine(DisablePlayerCollider(0.40f));
     }
 
