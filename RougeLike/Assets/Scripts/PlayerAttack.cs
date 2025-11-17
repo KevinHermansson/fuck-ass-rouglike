@@ -14,11 +14,16 @@ public class PlayerAttack : MonoBehaviour
     public float projectileSpeed = 10f;
     public float projectileLifetime = 5f;
     private float lastDirection = 1f;
+    private Vector3 attackPointOffset; // Store the original offset from player
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        // Store the initial offset (should be positive X for right side)
+        if (attackPoint != null)
+        {
+            attackPointOffset = attackPoint.localPosition;
+        }
     }
 
     // Update is called once per frame
@@ -29,6 +34,17 @@ public class PlayerAttack : MonoBehaviour
             lastDirection = 1f;
         else if (Input.GetKey(KeyCode.A))
             lastDirection = -1f;
+
+        // Flip attack point based on direction
+        if (attackPoint != null)
+        {
+            // If moving left (lastDirection = -1), flip the X position
+            attackPoint.localPosition = new Vector3(
+                Mathf.Abs(attackPointOffset.x) * lastDirection,
+                attackPointOffset.y,
+                attackPointOffset.z
+            );
+        }
 
         if (Input.GetKeyDown(KeyCode.K))
             meleeAttack();
@@ -47,10 +63,10 @@ public class PlayerAttack : MonoBehaviour
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
         for (int i = 0; i < hitEnemies.Length; i++)
         {
-            EnemyHealth enemyHealth = hitEnemies[i].GetComponent<EnemyHealth>();
-            if (enemyHealth != null)
+            Enemy_Health health = hitEnemies[i].GetComponent<Enemy_Health>();
+            if (health != null)
             {
-                enemyHealth.TakeDamage(attackDamage);
+                health.TakeDamage(attackDamage);
             }
         }
         Debug.Log("Player Attacked!");
@@ -83,7 +99,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 for (int i = 0; i < hits.Length; i++)
                 {
-                    EnemyHealth h = hits[i].GetComponent<EnemyHealth>();
+                    Enemy_Health h = hits[i].GetComponent<Enemy_Health>();
                     if (h != null)
                         h.TakeDamage(attackDamage);
                 }

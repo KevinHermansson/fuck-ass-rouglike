@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9217237728527177978}
   - component: {fileID: 6416782061179878941}
   - component: {fileID: 6006324671964784110}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 8321510485957430488}
   - component: {fileID: 8392449369575080759}
   - component: {fileID: 2351940565912192315}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -250,7 +250,7 @@ GameObject:
   - component: {fileID: 7373405252804625440}
   - component: {fileID: 1213419189280663496}
   - component: {fileID: 2762517282858497147}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Heart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -329,7 +329,7 @@ GameObject:
   - component: {fileID: 7999197442871093795}
   - component: {fileID: 4197619051560634964}
   - component: {fileID: 4669856431471207943}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: FlyingBat
   m_TagString: enemy
   m_Icon: {fileID: 0}

@@ -103,20 +103,14 @@ public class Popcorn_shot : MonoBehaviour
     {
         string tag = collision.gameObject.tag;
 
-        // Check if popcorn hits the ground or walls
-        if (tag == "Ground" || tag == "fancyPlatform" || tag == "Wall")
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        // Check if popcorn hits the player
+        // Check if popcorn hits the player - apply damage
         if (tag == "Player")
         {
             ApplyDamage(collision.gameObject);
-            Destroy(gameObject);
-            return;
         }
+
+        // Destroy popcorn on ANY collision
+        Destroy(gameObject);
     }
 
     private void ApplyDamage(GameObject playerObject)

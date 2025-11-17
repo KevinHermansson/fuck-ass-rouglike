@@ -41,8 +41,8 @@ public class Enemy_Health : MonoBehaviour
 
     void Update()
     {
-        // Debug: Press K to take 1 damage
-        if (Input.GetKeyDown(KeyCode.K))
+        // Debug: Press I to take 1 damage
+        if (Input.GetKeyDown(KeyCode.I))
         {
             TakeDamage(1);
         }
