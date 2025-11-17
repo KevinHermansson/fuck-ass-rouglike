@@ -5,14 +5,17 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
+  - fancyPlatform
+  - enemy
+  - Bullet
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Pebbles
   - Water
   - UI
-  - 
+  - Player
   - 
   - 
   - 
