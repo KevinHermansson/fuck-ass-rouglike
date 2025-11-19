@@ -10,6 +10,11 @@ TagManager:
   - enemy
   - Bullet
   - Logic
+  - Health
+  - Damage
+  - AttackSpeed
+  - Speed
+  - JumpHeight
   layers:
   - Default
   - TransparentFX
