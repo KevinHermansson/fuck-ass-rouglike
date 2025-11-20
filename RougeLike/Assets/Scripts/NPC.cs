@@ -6,10 +6,12 @@ using System.Collections.Generic;
 public class NPC : MonoBehaviour
 {
     public GameObject dialoguePanel;
+    public GameObject upgradeMenuPanel;
     public TMPro.TextMeshProUGUI dialogueText;
     public string[] dialogueLines;
     private int currentLineIndex;
     public GameObject contButton;
+    public GameObject upgradeButton;
     public float wordSpeed;
     public bool playerInRange;
 
@@ -18,11 +20,14 @@ public class NPC : MonoBehaviour
 
     void Update()
     {
+
+        UpgradebutttonAppear();
         if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
             if (dialoguePanel.activeInHierarchy)
             {
-                ZeroText(); // now also hides panel and stops typing
+                NextLine(); // now also hides panel and stops typing
+
             }
             else
             {
@@ -43,6 +48,7 @@ public class NPC : MonoBehaviour
         if (typingRoutine != null) { StopCoroutine(typingRoutine); typingRoutine = null; }
         isTyping = false;
         contButton.SetActive(false);
+        upgradeButton.SetActive(false);
         dialogueText.text = "";
         dialoguePanel.SetActive(false);
     }
@@ -51,6 +57,7 @@ public class NPC : MonoBehaviour
     {
         isTyping = true;
         contButton.SetActive(false);
+        upgradeButton.SetActive(false);
         dialogueText.text = "";
 
         // safety check
@@ -58,6 +65,7 @@ public class NPC : MonoBehaviour
         {
             isTyping = false;
             contButton.SetActive(false);
+            upgradeButton.SetActive(false);
             yield break;
         }
 
@@ -87,6 +95,25 @@ public class NPC : MonoBehaviour
         }
     }
 
+    public void UpgradebutttonAppear()
+    {
+        if (currentLineIndex == dialogueLines.Length - 1 && isTyping == false)
+        {
+            upgradeButton.SetActive(true);
+            if (upgradeButton.activeInHierarchy == true && Input.GetKeyDown(KeyCode.R))
+            {
+                UpgradeMenu();
+            }
+        }
+
+    }
+
+    public void UpgradeMenu()
+    {
+        ZeroText();
+        upgradeMenuPanel.SetActive(true);
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -102,7 +129,8 @@ public class NPC : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInRange = false;
-            ZeroText(); // ensures the panel hides on exit
+            ZeroText();
+            upgradeMenuPanel.SetActive(false);
         }
     }
 }
