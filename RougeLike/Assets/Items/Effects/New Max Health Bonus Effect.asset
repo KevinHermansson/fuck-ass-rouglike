@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: New Max Health Bonus Effect
   m_EditorClassIdentifier: Assembly-CSharp::MaxHealthBonusEffect
-  EffectName: 
+  EffectName: Health boost
   maxHealthAdd: 10
