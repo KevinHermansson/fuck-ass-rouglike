@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Items/Seed")]
 public class SeedItem : ItemBase
 {
-    public SeedEffectBase Effect;
+    public StatEffect Effect;
 
     private void OnEnable()
     {

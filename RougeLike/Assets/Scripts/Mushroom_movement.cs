@@ -102,7 +102,7 @@ public class Mushroom_movement : MonoBehaviour
         if (distance <= 2f && !playerIsAbove)
         {
             MovementScript playerMovement = player.GetComponent<MovementScript>();
-            Player_Health playerHealth = player.GetComponent<Player_Health>();
+            Player_Stats playerHealth = player.GetComponent<Player_Stats>();
 
             if (playerMovement != null)
             {

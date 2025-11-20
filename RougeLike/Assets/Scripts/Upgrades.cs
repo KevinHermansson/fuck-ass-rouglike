@@ -14,6 +14,10 @@ public class Upgrades : MonoBehaviour
     public TMPro.TextMeshProUGUI SpeedCostText;
     public TMPro.TextMeshProUGUI JumpHeightCostText;
 
+    public Player_Stats playerStats;
+    public int healthBonusPerLevel = 10;
+    public float speedBonusPerLevel = 0.5f;
+
     public float HealthLevel = 1;
     public float HealthCost = 5;
     public float DamageLevel = 1;
@@ -25,6 +29,18 @@ public class Upgrades : MonoBehaviour
     public float JumpHeightLevel = 1;
     public float JumpHeightCost = 5;
 
+    private void Start()
+    {
+        if (playerStats == null)
+        {
+            playerStats = FindFirstObjectByType<Player_Stats>();
+            if (playerStats == null)
+            {
+                Debug.LogError("Could not find Player_Stats component in the scene!");
+            }
+        }
+    }
+
     private void Update()
     {
         UpdateLevelTexts();
@@ -32,8 +48,14 @@ public class Upgrades : MonoBehaviour
     }
     public void Upgrade()
     {
-        string buttonTag = EventSystem.current.currentSelectedGameObject.tag;
+        if (EventSystem.current.currentSelectedGameObject == null)
+        {
+            Debug.LogError("No button selected!");
+            return;
+        }
 
+        string buttonTag = EventSystem.current.currentSelectedGameObject.tag;
+        Debug.Log($"Upgrade button clicked with tag: {buttonTag}");
 
 
         switch (buttonTag)
@@ -44,7 +66,16 @@ public class Upgrades : MonoBehaviour
                     HealthCost = (int)(5 * Mathf.Pow(1.2f, HealthLevel));
                 }
                 HealthLevel++;
-                Debug.Log("Health upgraded");
+                if (playerStats != null)
+                {
+                    playerStats.MaxHealthBonus += healthBonusPerLevel;
+                    playerStats.health = playerStats.MaxHealth; // Heal to new max
+                    Debug.Log($"Health upgraded! MaxHealthBonus: {playerStats.MaxHealthBonus}, MaxHealth: {playerStats.MaxHealth}, Current Health: {playerStats.health}");
+                }
+                else
+                {
+                    Debug.LogError("playerStats is null! Please assign Player_Stats in Inspector.");
+                }
                 break;
             case "Damage":
                 if (DamageLevel >= 2)
@@ -68,6 +99,10 @@ public class Upgrades : MonoBehaviour
                     SpeedCost = (int)(5 * Mathf.Pow(1.2f, SpeedLevel));
                 }
                 SpeedLevel++;
+                if (playerStats != null)
+                {
+                    playerStats.SpeedBonus += speedBonusPerLevel;
+                }
                 Debug.Log("Speed upgraded");
                 break;
             case "JumpHeight":
