@@ -9,15 +9,33 @@ public class Player_Stats : MonoBehaviour
     public float flashDuration = 0.1f;
     public Color flashColor = new Color(1f, 0f, 0f, 0.5f);
 
-    // Stats with bonuses
+    // Base Stats
+    [Header("Base Stats")]
     public float BaseMoveSpeed = 5f;
     public int BaseMaxHealth = 100;
+    public int BaseAttackDamage = 20;
+    public float BaseAttackSpeed = 1f;
+    public float BaseJumpHeight = 8f;
+
+    // Current Stats (read-only in inspector)
+    [Header("Current Stats (Base + Bonuses)")]
+    [SerializeField] private float currentMoveSpeed;
+    [SerializeField] private int currentMaxHealth;
+    [SerializeField] private int currentAttackDamage;
+    [SerializeField] private float currentAttackSpeed;
+    [SerializeField] private float currentJumpHeight;
 
     public float SpeedBonus { get; set; }
     public int MaxHealthBonus { get; set; }
+    public int AttackDamageBonus { get; set; }
+    public float AttackSpeedBonus { get; set; }
+    public float JumpHeightBonus { get; set; }
 
     public float MoveSpeed => BaseMoveSpeed + SpeedBonus;
     public int MaxHealth => BaseMaxHealth + MaxHealthBonus;
+    public int AttackDamage => BaseAttackDamage + AttackDamageBonus;
+    public float AttackSpeed => BaseAttackSpeed + AttackSpeedBonus;
+    public float JumpHeight => BaseJumpHeight + JumpHeightBonus;
 
     private SpriteRenderer spriteRenderer;
     private MovementScript movementScript;
@@ -48,6 +66,13 @@ public class Player_Stats : MonoBehaviour
         {
             movementScript.moveSpeed = MoveSpeed;
         }
+
+        // Update current stats display in inspector
+        currentMoveSpeed = MoveSpeed;
+        currentMaxHealth = MaxHealth;
+        currentAttackDamage = AttackDamage;
+        currentAttackSpeed = AttackSpeed;
+        currentJumpHeight = JumpHeight;
     }
 
     public void ClampHealth()

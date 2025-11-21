@@ -15,6 +15,8 @@ public class PlayerAttack : MonoBehaviour
     public float projectileLifetime = 5f;
     private float lastDirection = 1f;
     private Vector3 attackPointOffset; // Store the original offset from player
+    private Player_Stats playerStats;
+    private float nextAttackTime = 0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -24,6 +26,7 @@ public class PlayerAttack : MonoBehaviour
         {
             attackPointOffset = attackPoint.localPosition;
         }
+        playerStats = GetComponent<Player_Stats>();
     }
 
     // Update is called once per frame
@@ -46,10 +49,20 @@ public class PlayerAttack : MonoBehaviour
             );
         }
 
-        if (Input.GetKeyDown(KeyCode.K))
+        // Use attack speed to determine cooldown
+        float currentAttackSpeed = (playerStats != null) ? playerStats.AttackSpeed : 1f;
+        float cooldown = 1f / currentAttackSpeed; // Higher attack speed = lower cooldown
+
+        if (Input.GetKeyDown(KeyCode.K) && Time.time >= nextAttackTime)
+        {
             meleeAttack();
-        if (Input.GetKeyDown(KeyCode.J))
+            nextAttackTime = Time.time + cooldown;
+        }
+        if (Input.GetKeyDown(KeyCode.J) && Time.time >= nextAttackTime)
+        {
             rangedAttack();
+            nextAttackTime = Time.time + cooldown;
+        }
     }
 
     void OnDrawGizmosSelected()
@@ -60,16 +73,17 @@ public class PlayerAttack : MonoBehaviour
 
     public void meleeAttack()
     {
+        int currentDamage = (playerStats != null) ? playerStats.AttackDamage : attackDamage;
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
         for (int i = 0; i < hitEnemies.Length; i++)
         {
             Enemy_Health health = hitEnemies[i].GetComponent<Enemy_Health>();
             if (health != null)
             {
-                health.TakeDamage(attackDamage);
+                health.TakeDamage(currentDamage);
             }
         }
-        Debug.Log("Player Attacked!");
+        Debug.Log($"Player Attacked with {currentDamage} damage!");
     }
 
     public void rangedAttack()
@@ -97,11 +111,12 @@ public class PlayerAttack : MonoBehaviour
             Collider2D[] hits = Physics2D.OverlapCircleAll(proj.transform.position, checkRadius, enemyLayers);
             if (hits.Length > 0)
             {
+                int currentDamage = (playerStats != null) ? playerStats.AttackDamage : attackDamage;
                 for (int i = 0; i < hits.Length; i++)
                 {
                     Enemy_Health h = hits[i].GetComponent<Enemy_Health>();
                     if (h != null)
-                        h.TakeDamage(attackDamage);
+                        h.TakeDamage(currentDamage);
                 }
                 Destroy(proj);
                 yield break;
