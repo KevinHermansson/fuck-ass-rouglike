@@ -9,13 +9,14 @@ public class MovementScript : MonoBehaviour
     public float knockbackDuration = 0.3f;
     public Rigidbody2D rb;
     public Animator animator;
+    private Player_Stats playerStats;
 
     public float groundCheck = 0;
     public float wallCheck = 0;
     public bool fancyGroundCheck;
     public BoxCollider2D feetTrigger; // Assign the feet trigger collider in Inspector
     BoxCollider2D PlayerCollider;
-    
+
     private bool feetTouchingGround = false;
     private bool feetTouchingPlatform = false;
 
@@ -28,6 +29,7 @@ public class MovementScript : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         PlayerCollider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
+        playerStats = GetComponent<Player_Stats>();
 
         // Ignore collisions with all enemies
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
@@ -57,15 +59,18 @@ public class MovementScript : MonoBehaviour
                 knockbackAdd = Vector2.zero;
         }
 
+        // Use jump height from playerStats if available, otherwise use default
+        float currentJumpHeight = (playerStats != null) ? playerStats.JumpHeight : jumpHeight;
+
         // jump once when pressed
         if (Input.GetKeyDown(KeyCode.Space) && groundCheck >= 1)
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpHeight);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, currentJumpHeight);
 
         if (Input.GetKeyDown(KeyCode.Space) && wallCheck >= 1)
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpHeight);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, currentJumpHeight);
 
         if (Input.GetKeyDown(KeyCode.Space) && fancyGroundCheck)
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpHeight);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, currentJumpHeight);
 
 
         if (Input.GetKey(KeyCode.S))
@@ -78,7 +83,7 @@ public class MovementScript : MonoBehaviour
         if (left && !right)
         {
             inputVX = -moveSpeed;
-            
+
             // Set animator parameters for moving left
             if (animator != null)
             {
@@ -89,7 +94,7 @@ public class MovementScript : MonoBehaviour
         else if (right && !left)
         {
             inputVX = moveSpeed;
-            
+
             // Set animator parameters for moving right
             if (animator != null)
             {
@@ -169,7 +174,7 @@ public class MovementScript : MonoBehaviour
                 feetTouchingGround = true;
                 groundCheck = 1;
             }
-            
+
             if (other.CompareTag("fancyPlatform"))
             {
                 feetTouchingPlatform = true;
@@ -189,7 +194,7 @@ public class MovementScript : MonoBehaviour
                 feetTouchingGround = false;
                 groundCheck = 0;
             }
-            
+
             if (other.CompareTag("fancyPlatform"))
             {
                 feetTouchingPlatform = false;
@@ -217,15 +222,15 @@ public class MovementScript : MonoBehaviour
         // Temporarily disable both the feet trigger AND main collider to allow dropping through
         if (feetTrigger != null)
             feetTrigger.enabled = false;
-        
+
         if (PlayerCollider != null)
             PlayerCollider.enabled = false;
-        
+
         yield return new WaitForSeconds(disableTime);
-        
+
         if (feetTrigger != null)
             feetTrigger.enabled = true;
-        
+
         if (PlayerCollider != null)
             PlayerCollider.enabled = true;
     }

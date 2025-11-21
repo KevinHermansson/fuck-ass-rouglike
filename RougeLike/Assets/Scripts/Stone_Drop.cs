@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class Stone_Drop : MonoBehaviour
 {
-    public float dropSpeed = 5f; 
+    public float dropSpeed = 5f;
     public int damage = 10;
 
 
-    private Rigidbody2D rb; 
+    private Rigidbody2D rb;
     Transform player;
 
-    
+
     private float spawnTime;
 
     void Start()
@@ -19,8 +19,8 @@ public class Stone_Drop : MonoBehaviour
         GameObject p = GameObject.FindWithTag("Player");
         if (p != null)
             player = p.transform;
-        
-       
+
+
         rb = GetComponent<Rigidbody2D>();
 
         if (rb == null)
@@ -35,13 +35,13 @@ public class Stone_Drop : MonoBehaviour
         rb.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionX; // Lås rotation och X-position
         rb.linearVelocity = Vector2.down * dropSpeed;
 
-        
+
         Collider2D collider = GetComponent<Collider2D>();
         if (collider == null)
         {
             collider = gameObject.AddComponent<BoxCollider2D>();
         }
-        
+
         // Ignore collisions with all enemies
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
         foreach (GameObject enemy in enemies)
@@ -77,27 +77,27 @@ public class Stone_Drop : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        
+
 
         // Kolla om stenen träffar marken (flera möjliga taggar)
         string tag = collision.gameObject.tag;
-        
+
         // Check if stone hits the ground
         if (tag == "Ground" || tag == "fancyPlatform")
         {
-            Destroy(gameObject); 
+            Destroy(gameObject);
             return;
         }
-        
+
         // Check if stone hits the player
         if (tag == "Player")
         {
             TakeDamage();
-            Destroy(gameObject); 
+            Destroy(gameObject);
             return;
         }
     }
-    
+
     private void TakeDamage()
     {
         if (player == null)
@@ -109,8 +109,8 @@ public class Stone_Drop : MonoBehaviour
             else
                 return; // Still no player found, exit
         }
-        
-        Player_Health playerHealth = player.GetComponent<Player_Health>();
+
+        Player_Stats playerHealth = player.GetComponent<Player_Stats>();
         if (playerHealth != null)
         {
             damage = 15;

@@ -138,7 +138,7 @@ public class Slime_movement : MonoBehaviour
 
     private void TakeDamage()
     {
-        Player_Health playerHealth = player.GetComponent<Player_Health>();
+        Player_Stats playerHealth = player.GetComponent<Player_Stats>();
         if (playerHealth != null)
         {
             damage = 5;

@@ -284,6 +284,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4521000663584254454, guid: 19e2a7a3130caae40beca39e7483b298, type: 3}
   m_PrefabInstance: {fileID: 344239003}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &188458574 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 711100909632208031, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
+  m_PrefabInstance: {fileID: 1518801050}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &219977577 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9126730816882792940, guid: 19e2a7a3130caae40beca39e7483b298, type: 3}
@@ -978,6 +983,9 @@ MonoBehaviour:
   AttackSpeedCostText: {fileID: 323851803}
   SpeedCostText: {fileID: 1239269614}
   JumpHeightCostText: {fileID: 1239018843}
+  playerStats: {fileID: 0}
+  healthBonusPerLevel: 10
+  speedBonusPerLevel: 0.5
   HealthLevel: 1
   HealthCost: 5
   DamageLevel: 1
@@ -2062,7 +2070,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2940249776445975921, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1023520215}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 711100909632208031, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1740225627}
   m_SourcePrefab: {fileID: 100100000, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
 --- !u!1 &1539320399
 GameObject:
@@ -2316,6 +2327,20 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2940249776445975921, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
   m_PrefabInstance: {fileID: 1518801050}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1740225627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 188458574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba165372fe72152408a82c02a64e336e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  BaseMoveSpeed: 5
+  BaseMaxHealth: 100
 --- !u!1001 &1755937424
 PrefabInstance:
   m_ObjectHideFlags: 0

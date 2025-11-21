@@ -93,9 +93,9 @@ public class Popcorn_shot : MonoBehaviour
         if (mainCamera == null) return false;
 
         Vector3 screenPoint = mainCamera.WorldToViewportPoint(transform.position);
-        
+
         // Check if outside screen bounds (with small buffer)
-        return screenPoint.x < -0.1f || screenPoint.x > 1.1f || 
+        return screenPoint.x < -0.1f || screenPoint.x > 1.1f ||
                screenPoint.y < -0.1f || screenPoint.y > 1.1f;
     }
 
@@ -115,7 +115,7 @@ public class Popcorn_shot : MonoBehaviour
 
     private void ApplyDamage(GameObject playerObject)
     {
-        Player_Health playerHealth = playerObject.GetComponent<Player_Health>();
+        Player_Stats playerHealth = playerObject.GetComponent<Player_Stats>();
         if (playerHealth != null)
         {
             playerHealth.TakeDamage(damage);

@@ -3,7 +3,7 @@ using UnityEngine;
 public class SeedEffectApplier : MonoBehaviour
 {
     [SerializeField] private SeedInventoryHolder holder;
-    [SerializeField] private PlayerStats stats;
+    [SerializeField] private Player_Stats playerStats;
 
     private SeedItem[] lastApplied = new SeedItem[SeedInventory.Capacity];
 
@@ -24,7 +24,7 @@ public class SeedEffectApplier : MonoBehaviour
         for (int i = 0; i < lastApplied.Length; i++)
         {
             if (lastApplied[i] != null && lastApplied[i].Effect != null)
-                lastApplied[i].Effect.Remove(stats);
+                lastApplied[i].Effect.Remove(playerStats);
             lastApplied[i] = null;
         }
     }
@@ -38,7 +38,7 @@ public class SeedEffectApplier : MonoBehaviour
             var item = holder.Inventory.GetAt(i);
             if (item != null && item.Effect != null)
             {
-                item.Effect.Apply(stats);
+                item.Effect.Apply(playerStats);
                 lastApplied[i] = item;
             }
         }
