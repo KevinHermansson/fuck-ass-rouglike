@@ -63,10 +63,18 @@ public class PlayerAttack : MonoBehaviour
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
         for (int i = 0; i < hitEnemies.Length; i++)
         {
+            // Check for regular enemy health
             Enemy_Health health = hitEnemies[i].GetComponent<Enemy_Health>();
             if (health != null)
             {
                 health.TakeDamage(attackDamage);
+            }
+
+            // Check for miniboss health
+            MinibossHealth bossHealth = hitEnemies[i].GetComponent<MinibossHealth>();
+            if (bossHealth != null)
+            {
+                bossHealth.TakeDamage(attackDamage);
             }
         }
         Debug.Log("Player Attacked!");
@@ -99,9 +107,15 @@ public class PlayerAttack : MonoBehaviour
             {
                 for (int i = 0; i < hits.Length; i++)
                 {
+                    // Check for regular enemy health
                     Enemy_Health h = hits[i].GetComponent<Enemy_Health>();
                     if (h != null)
                         h.TakeDamage(attackDamage);
+
+                    // Check for miniboss health
+                    MinibossHealth bossHealth = hits[i].GetComponent<MinibossHealth>();
+                    if (bossHealth != null)
+                        bossHealth.TakeDamage(attackDamage);
                 }
                 Destroy(proj);
                 yield break;
