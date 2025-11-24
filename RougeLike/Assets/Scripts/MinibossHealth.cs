@@ -5,10 +5,11 @@ using TMPro;
 
 public class MinibossHealth : MonoBehaviour
 {
-    public float health = 1000;
+    public float health = 100;
     public float maxHealth = 1000;
     public Image Healthbarfordummies; // Drag the UI Image (boss health bar) here in Inspector
     public TextMeshProUGUI healthText; // Drag the TextMeshPro text inside the health bar here
+    public GameObject healthBarBorder; // Drag the GameObject for the health bar border here
     public float flashDuration = 0.1f;
     public Color flashColor = new Color(1f, 0f, 0f, 0.5f); // Transparent red
 
@@ -117,6 +118,14 @@ public class MinibossHealth : MonoBehaviour
         if (Healthbarfordummies != null)
         {
             Healthbarfordummies.gameObject.SetActive(false);
+        }
+        if (healthText != null)
+        {
+            healthText.gameObject.SetActive(false);
+        }
+        if (healthBarBorder != null)
+        {
+            healthBarBorder.gameObject.SetActive(false);
         }
         // Add death animation, rewards, etc.
         Destroy(gameObject, 1f);
