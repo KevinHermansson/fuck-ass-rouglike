@@ -199,7 +199,7 @@ public class Miniboss_Movement : MonoBehaviour
         
         foreach (Collider2D player in hitPlayers)
         {
-            Player_Health playerHealth = player.GetComponent<Player_Health>();
+            Player_Stats playerHealth = player.GetComponent<Player_Stats>();
             if (playerHealth != null)
             {
                 playerHealth.TakeDamage(damage);

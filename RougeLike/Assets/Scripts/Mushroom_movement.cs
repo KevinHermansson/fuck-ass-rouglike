@@ -125,7 +125,7 @@ public class Mushroom_movement : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Player has no Player_Health component!");
+                Debug.LogWarning("Player has no Player_Stats component!");
             }
         }
         else if (playerIsAbove)

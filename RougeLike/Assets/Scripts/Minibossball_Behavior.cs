@@ -46,7 +46,7 @@ public class Minibossball_Behavior : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         // Ignore triggers with enemies
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("enemy"))
         {
             return;
         }
@@ -54,7 +54,7 @@ public class Minibossball_Behavior : MonoBehaviour
         // Check if the ball hits the player
         if (other.CompareTag("Player"))
         {
-            Player_Health playerHealth = other.GetComponent<Player_Health>();
+            Player_Stats playerHealth = other.GetComponent<Player_Stats>();
             if (playerHealth != null)
             {
                 playerHealth.TakeDamage(damage);
@@ -62,7 +62,7 @@ public class Minibossball_Behavior : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Player_Health component not found on player!");
+                Debug.LogWarning("Player_Stats component not found on player!");
             }
         }
         
