@@ -35,7 +35,9 @@ Transform:
   m_LocalPosition: {x: 3.27, y: -3.38, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2801243325356280827}
+  - {fileID: 5926716233780994284}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3214595285041455295
@@ -126,7 +128,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 204869824561539862}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -203,13 +205,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a4a3a7e2fbc55a41b2fc2c301d7d01b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  animator: {fileID: 0}
-  teleportInterval: 10
-  teleportAnimationDuration: 1
-  teleportAreaMin: {x: -10, y: -5}
-  teleportAreaMax: {x: 10, y: 5}
-  attackInterval: 7
+  animator: {fileID: 6679351197335938670}
+  speed: 5
+  leftBound: -8
+  rightBound: 8
+  attackInterval: 3
+  teleportInterval: 8
   attackAnimationDuration: 1
+  attack1Point: {fileID: 2801243325356280827}
+  attack1Range: 1
+  attack1Damage: 10
+  attack2Point: {fileID: 5926716233780994284}
+  attack2Range: 1.3
+  attack2Damage: 5
+  minibossBallPrefab: {fileID: 1352204853956094980, guid: 613ecba4c32a6ba48b802d3417c13f2a, type: 3}
+  minibossBallSpawnInterval: 2
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &3160445962862340871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,8 +236,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthSystemForDummies
   IsAlive: 1
-  CurrentHealth: 1000
-  MaximumHealth: 1000
+  CurrentHealth: 100
+  MaximumHealth: 100
   HasAnimationWhenHealthChanges: 1
   AnimationDuration: 0.1
   OnCurrentHealthChanged:
@@ -249,9 +262,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8665f9a35adff04cae9d1d51b09bf3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  health: 1000
-  maxHealth: 1000
+  health: 100
+  maxHealth: 100
   Healthbarfordummies: {fileID: 0}
   healthText: {fileID: 0}
+  healthBarBorder: {fileID: 0}
   flashDuration: 0.1
   flashColor: {r: 1, g: 0, b: 0, a: 0.5}
+--- !u!1 &3811941564161638346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5926716233780994284}
+  m_Layer: 7
+  m_Name: MinibossAttackPoint2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5926716233780994284
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3811941564161638346}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.1, y: 0.7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3883397938406718610}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6946152260307903924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2801243325356280827}
+  m_Layer: 7
+  m_Name: MinibossAttackPoint1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2801243325356280827
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6946152260307903924}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.3, y: 0.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3883397938406718610}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
