@@ -11,6 +11,7 @@ public class Player_Health : MonoBehaviour
     public Color flashColor = new Color(1f, 0f, 0f, 0.5f); // Transparent red
 
     private SpriteRenderer spriteRenderer;
+    private bool isFlashing = false;
 
 
     void Start()
@@ -46,8 +47,8 @@ public class Player_Health : MonoBehaviour
             healthBar.fillAmount = fillValue;
         }
 
-        // Trigger damage flash
-        if (spriteRenderer != null)
+        // Trigger damage flash only if not already flashing
+        if (spriteRenderer != null && !isFlashing)
         {
             StartCoroutine(DamageFlash());
         }
@@ -60,10 +61,20 @@ public class Player_Health : MonoBehaviour
 
     IEnumerator DamageFlash()
     {
+        if (spriteRenderer == null || isFlashing) yield break;
+        
+        isFlashing = true;
         Color originalColor = spriteRenderer.color;
         spriteRenderer.color = flashColor;
         yield return new WaitForSeconds(flashDuration);
-        spriteRenderer.color = originalColor;
+        
+        // Make sure sprite renderer still exists before resetting color
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = originalColor;
+        }
+        
+        isFlashing = false;
     }
 
     void Die()
