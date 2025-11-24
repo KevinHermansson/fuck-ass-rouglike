@@ -4,6 +4,15 @@ public class InventoryScreenController : MonoBehaviour
 {
     [SerializeField] private GameObject hudPanel;
     [SerializeField] private GameObject inventoryPanel;
+    public GameObject InventoryPanel => inventoryPanel;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            ToggleInventory();
+        }
+    }
 
     public void OpenInventory()
     {

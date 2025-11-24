@@ -9,6 +9,14 @@ public class SeedInventory : ScriptableObject
     [SerializeField] private int selectedIndex = 0;
 
     public event Action OnChanged;
+    
+    private void OnEnable()
+    {
+        if (slots == null || slots.Length != Capacity)
+        {
+            slots = new SeedItem[Capacity];
+        }
+    }
 
     public int SelectedIndex
     {

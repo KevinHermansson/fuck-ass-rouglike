@@ -18,7 +18,6 @@ public class MovementScript : MonoBehaviour
     BoxCollider2D PlayerCollider;
 
     private bool feetTouchingGround = false;
-    private bool feetTouchingPlatform = false;
 
     // CHANGED: remove isKnockedBack gating, use additive knockback
     private float knockbackTimer = 0f;
@@ -177,7 +176,6 @@ public class MovementScript : MonoBehaviour
 
             if (other.CompareTag("fancyPlatform"))
             {
-                feetTouchingPlatform = true;
                 fancyGroundCheck = true;
                 groundCheck = 1;
             }
@@ -197,7 +195,6 @@ public class MovementScript : MonoBehaviour
 
             if (other.CompareTag("fancyPlatform"))
             {
-                feetTouchingPlatform = false;
                 fancyGroundCheck = false;
                 groundCheck = 0;
             }

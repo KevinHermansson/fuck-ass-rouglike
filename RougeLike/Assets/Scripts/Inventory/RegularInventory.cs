@@ -4,11 +4,19 @@ using System;
 [CreateAssetMenu(menuName = "Inventory/RegularInventory")]
 public class RegularInventory : ScriptableObject
 {
-    public const int Capacity = 6;
+    public const int Capacity = 9;
     [SerializeField] private ItemBase[] slots = new ItemBase[Capacity];
     [SerializeField] private int selectedIndex = 0;
 
     public event Action OnChanged;
+    
+    private void OnEnable()
+    {
+        if (slots == null || slots.Length != Capacity)
+        {
+            slots = new ItemBase[Capacity];
+        }
+    }
 
     public int SelectedIndex
     {
@@ -20,11 +28,24 @@ public class RegularInventory : ScriptableObject
         }
     }
 
-    public ItemBase GetAt(int index) => (index >= 0 && index < Capacity) ? slots[index] : null;
+    public ItemBase GetAt(int index)
+    {
+        if (slots == null || slots.Length != Capacity)
+        {
+            slots = new ItemBase[Capacity];
+        }
+        
+        return (index >= 0 && index < Capacity && index < slots.Length) ? slots[index] : null;
+    }
 
     public bool HasEmptySlot(out int emptyIndex)
     {
-        for (int i = 0; i < Capacity; i++)
+        if (slots == null || slots.Length != Capacity)
+        {
+            slots = new ItemBase[Capacity];
+        }
+        
+        for (int i = 0; i < Capacity && i < slots.Length; i++)
         {
             if (slots[i] == null)
             {
@@ -38,17 +59,38 @@ public class RegularInventory : ScriptableObject
 
     public void AddOrReplace(ItemBase newItem, out ItemBase replaced)
     {
+        if (slots == null || slots.Length != Capacity)
+        {
+            slots = new ItemBase[Capacity];
+        }
+        
         if (newItem == null || newItem.Category != ItemCategory.Regular) { replaced = null; return; }
 
         if (HasEmptySlot(out int idx))
         {
-            slots[idx] = newItem;
-            replaced = null;
+            if (idx >= 0 && idx < slots.Length)
+            {
+                slots[idx] = newItem;
+                replaced = null;
+            }
+            else
+            {
+                replaced = null;
+                return;
+            }
         }
         else
         {
-            replaced = slots[selectedIndex];
-            slots[selectedIndex] = newItem;
+            if (selectedIndex >= 0 && selectedIndex < slots.Length)
+            {
+                replaced = slots[selectedIndex];
+                slots[selectedIndex] = newItem;
+            }
+            else
+            {
+                replaced = null;
+                return;
+            }
         }
 
         OnChanged?.Invoke();
@@ -56,14 +98,24 @@ public class RegularInventory : ScriptableObject
 
     public void RemoveAt(int index)
     {
-        if (index < 0 || index >= Capacity) return;
+        if (slots == null || slots.Length != Capacity)
+        {
+            slots = new ItemBase[Capacity];
+        }
+        
+        if (index < 0 || index >= Capacity || index >= slots.Length) return;
         slots[index] = null;
         OnChanged?.Invoke();
     }
 
     public void Clear()
     {
-        for (int i = 0; i < Capacity; i++) slots[i] = null;
+        if (slots == null || slots.Length != Capacity)
+        {
+            slots = new ItemBase[Capacity];
+        }
+        
+        for (int i = 0; i < Capacity && i < slots.Length; i++) slots[i] = null;
         selectedIndex = 0;
         OnChanged?.Invoke();
     }

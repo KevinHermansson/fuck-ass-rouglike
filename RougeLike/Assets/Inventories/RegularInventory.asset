@@ -12,4 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d328e09bf9921f44bb03df9ce19e25a, type: 3}
   m_Name: RegularInventory
   m_EditorClassIdentifier: Assembly-CSharp::RegularInventory
-  slots: []
+  slots:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  selectedIndex: 0
