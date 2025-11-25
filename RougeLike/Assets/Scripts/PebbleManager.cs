@@ -24,4 +24,20 @@ public class PebbleManager : MonoBehaviour
             PebbleUI.Instance.PlayBump();
         }
     }
+
+    public void DropPebbles(GameObject prefabToDrop, int amount, Vector3 position)
+    {
+        if (prefabToDrop == null)
+        {
+            Debug.LogWarning("Prefab to drop is not assigned!");
+            return;
+        }
+
+        for (int i = 0; i < amount; i++)
+        {
+            // Add a small random offset to the spawn position
+            Vector3 spawnPosition = position + new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(0f, 0.5f), 0);
+            Instantiate(prefabToDrop, spawnPosition, Quaternion.identity);
+        }
+    }
 }

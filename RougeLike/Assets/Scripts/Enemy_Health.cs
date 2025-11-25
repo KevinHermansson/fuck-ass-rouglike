@@ -7,6 +7,8 @@ public class Enemy_Health : MonoBehaviour
 {
     public float health = 20;
     public float maxHealth = 20;
+    public int pebblesToDrop = 1; // Amount of pebbles this enemy should drop
+    public GameObject enemyPebblePrefab; // Assign the pebble prefab this enemy should drop
     public TextMeshProUGUI healthText; // Assign the TextMeshPro text in Inspector
     public float textOffsetX = 0f; // How far left/right from center (negative = left)
     public float textOffsetY = 0f; // How far above the enemy the text appears
@@ -102,6 +104,20 @@ public class Enemy_Health : MonoBehaviour
     void Die()
     {
         Debug.Log($"{gameObject.name} died!");
+
+        // Drop pebbles based on the public variable
+        if (PebbleManager.Instance != null && pebblesToDrop > 0)
+        {
+            if (enemyPebblePrefab != null)
+            {
+                PebbleManager.Instance.DropPebbles(enemyPebblePrefab, pebblesToDrop, transform.position);
+            }
+            else
+            {
+                Debug.LogWarning($"Enemy '{gameObject.name}' has no enemyPebblePrefab assigned in Enemy_Health script!");
+            }
+        }
+
         Destroy(gameObject);
     }
 }

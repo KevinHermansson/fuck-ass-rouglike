@@ -10,6 +10,7 @@ public class MinibossHealth : MonoBehaviour
     public Image Healthbarfordummies; // Drag the UI Image (boss health bar) here in Inspector
     public TextMeshProUGUI healthText; // Drag the TextMeshPro text inside the health bar here
     public GameObject healthBarBorder; // Drag the GameObject for the health bar border here
+    public GameObject minibossPebblePrefab; // Assign the pebble prefab this miniboss should drop
     public float flashDuration = 0.1f;
     public Color flashColor = new Color(1f, 0f, 0f, 0.5f); // Transparent red
 
@@ -127,6 +128,20 @@ public class MinibossHealth : MonoBehaviour
         {
             healthBarBorder.gameObject.SetActive(false);
         }
+        
+        // Drop pebbles
+        if (PebbleManager.Instance != null)
+        {
+            if (minibossPebblePrefab != null)
+            {
+                PebbleManager.Instance.DropPebbles(minibossPebblePrefab, 15, transform.position);
+            }
+            else
+            {
+                Debug.LogWarning($"Miniboss has no minibossPebblePrefab assigned in MinibossHealth script!");
+            }
+        }
+
         // Add death animation, rewards, etc.
         Destroy(gameObject, 1f);
     }
