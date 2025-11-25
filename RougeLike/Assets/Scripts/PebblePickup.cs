@@ -20,6 +20,30 @@ public class PebblePickup : MonoBehaviour
         GameObject logicObject = GameObject.FindGameObjectWithTag("Logic");
         if (logicObject != null)
             logic = logicObject.GetComponent<LogicScript>();
+        
+        Collider2D myCollider = GetComponent<Collider2D>();
+        if (myCollider == null) return;
+
+        // Ignore collision with the player
+        if (p != null)
+        {
+            Collider2D playerCollider = p.GetComponent<Collider2D>();
+            if (playerCollider != null)
+            {
+                Physics2D.IgnoreCollision(myCollider, playerCollider);
+            }
+        }
+
+        // Ignore collision with all enemies
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            Collider2D enemyCollider = enemy.GetComponent<Collider2D>();
+            if (enemyCollider != null)
+            {
+                Physics2D.IgnoreCollision(myCollider, enemyCollider, true); // Ignore collision
+            }
+        }
     }
 
     void Update()

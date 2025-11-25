@@ -267,6 +267,7 @@ MonoBehaviour:
   Healthbarfordummies: {fileID: 0}
   healthText: {fileID: 0}
   healthBarBorder: {fileID: 0}
+  minibossPebblePrefab: {fileID: 5551639980324904637, guid: 1205c0e7318ac6f4d91dc8339611de42, type: 3}
   flashDuration: 0.1
   flashColor: {r: 1, g: 0, b: 0, a: 0.5}
 --- !u!1 &3811941564161638346

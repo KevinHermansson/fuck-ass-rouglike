@@ -361,6 +361,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Health
   health: 20
   maxHealth: 20
+  pebblesToDrop: 1
+  enemyPebblePrefab: {fileID: 5551639980324904637, guid: 1205c0e7318ac6f4d91dc8339611de42, type: 3}
   healthText: {fileID: 8176902703993824108}
   textOffsetX: 0
   textOffsetY: 0.18

@@ -39,11 +39,18 @@ public class Player_Stats : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
     private MovementScript movementScript;
+    private bool isFlashing = false;
+    private Color originalColor;
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         movementScript = GetComponent<MovementScript>();
+        
+        if (spriteRenderer != null)
+        {
+            originalColor = spriteRenderer.color;
+        }
 
         health = MaxHealth;
 
@@ -91,7 +98,8 @@ public class Player_Stats : MonoBehaviour
             healthBar.fillAmount = fillValue;
         }
 
-        if (spriteRenderer != null)
+        // Trigger damage flash only if not already flashing
+        if (spriteRenderer != null && !isFlashing)
         {
             StartCoroutine(DamageFlash());
         }
@@ -104,10 +112,11 @@ public class Player_Stats : MonoBehaviour
 
     IEnumerator DamageFlash()
     {
-        Color originalColor = spriteRenderer.color;
+        isFlashing = true;
         spriteRenderer.color = flashColor;
         yield return new WaitForSeconds(flashDuration);
         spriteRenderer.color = originalColor;
+        isFlashing = false;
     }
 
     void Die()
