@@ -236,7 +236,7 @@ public class MovementScript : MonoBehaviour
     {
         bool canDrop = (feetTrigger != null ? feetTrigger.enabled : true) && (PlayerCollider != null ? PlayerCollider.enabled : true);
         if (Input.GetKey(KeyCode.S) && fancyGroundCheck && canDrop)
-            StartCoroutine(DisablePlayerCollider(0.40f));
+            StartCoroutine(DisablePlayerCollider(0.30f));
     }
 
     // UPDATED: additive knockback
