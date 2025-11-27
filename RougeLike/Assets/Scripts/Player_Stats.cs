@@ -123,4 +123,12 @@ public class Player_Stats : MonoBehaviour
     {
         Debug.Log("Player died!");
     }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Bullet") && other.gameObject.layer == LayerMask.NameToLayer("enemy"))
+        {
+            TakeDamage(10);
+        }
+    }
 }

@@ -4,8 +4,8 @@ public class BossSpawnMovement : MonoBehaviour
 {
     public float speed = 3f;
     public float fallGravityScale = 1f; // Gravity scale when falling after attack
-    public float attackTriggerWidth = 2f; // How close the player needs to be on the X-axis to trigger the attack
-    public float splashDamageRadius = 3f; // The radius of the splash damage on impact
+    public float attackTriggerWidth = 0f; // How close the player needs to be on the X-axis to trigger the attack
+    public float splashDamageRadius = 2f; // The radius of the splash damage on impact
     public float splashDamage = 25f; // The damage dealt by the splash attack
     public LayerMask playerLayer; // Set this to the Player layer in the Inspector
 
@@ -50,18 +50,14 @@ public class BossSpawnMovement : MonoBehaviour
         // Can't attack if already attacking or if the player doesn't exist
         if (isAttacking || player == null) return;
 
-        // Check if the player is underneath the boss
+        // Check if the boss is right over the player (same X level)
         float horizontalDistance = Mathf.Abs(transform.position.x - player.position.x);
         bool isPlayerBelow = transform.position.y > player.position.y;
 
-        // If player is within the horizontal trigger range and below the boss, attack.
+        // If player is directly underneath (same X level within trigger width) and below the boss, attack
         if (horizontalDistance <= attackTriggerWidth && isPlayerBelow)
         {
-            // 50/50 chance to attack
-            if (Random.Range(0, 2) == 0) // Returns 0 or 1. If 0, attack.
-            {
-                Attack();
-            }
+            Attack();
         }
     }
 
