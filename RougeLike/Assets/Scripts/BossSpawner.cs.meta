@@ -1,2 +1,13 @@
 fileFormatVersion: 2
 guid: 08be61a73f92b7649a759d60182226d9
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - bouncerBossPrefab: {fileID: 8974957119336412367, guid: 2e2ff92b1b1ecd642a384c57cb987430, type: 3}
+  - flyerBossPrefab: {fileID: 2592642292432328351, guid: b47f613a60ce38548bce3c276c9a2810, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

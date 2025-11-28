@@ -35,12 +35,49 @@ public class BossSpawnMovement : MonoBehaviour
         {
             player = playerObj.transform;
 
-            // Ignore collision with the player
             Collider2D myCollider = GetComponent<Collider2D>();
+            
+            // Ignore collision with the player
             Collider2D playerCollider = player.GetComponent<Collider2D>();
             if (myCollider != null && playerCollider != null)
             {
                 Physics2D.IgnoreCollision(myCollider, playerCollider, true);
+            }
+            
+            // Ignore collision with all enemies
+            if (myCollider != null)
+            {
+                GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
+                foreach (GameObject enemy in enemies)
+                {
+                    Collider2D enemyCollider = enemy.GetComponent<Collider2D>();
+                    if (enemyCollider != null && enemyCollider != myCollider)
+                    {
+                        Physics2D.IgnoreCollision(myCollider, enemyCollider, true);
+                    }
+                }
+                
+                // Ignore collision with ground initially (will be re-enabled when attacking)
+                GameObject[] platforms = GameObject.FindGameObjectsWithTag("Ground");
+                foreach (GameObject platform in platforms)
+                {
+                    Collider2D platformCollider = platform.GetComponent<Collider2D>();
+                    if (platformCollider != null)
+                    {
+                        Physics2D.IgnoreCollision(myCollider, platformCollider, true);
+                    }
+                }
+                
+                // Always ignore collision with fancy platforms
+                GameObject[] fancyPlatforms = GameObject.FindGameObjectsWithTag("fancyPlatform");
+                foreach (GameObject fancyPlatform in fancyPlatforms)
+                {
+                    Collider2D fancyCollider = fancyPlatform.GetComponent<Collider2D>();
+                    if (fancyCollider != null)
+                    {
+                        Physics2D.IgnoreCollision(myCollider, fancyCollider, true);
+                    }
+                }
             }
         }
     }
@@ -134,6 +171,21 @@ public class BossSpawnMovement : MonoBehaviour
 
         // Enable gravity to make the enemy fall
         rb.gravityScale = fallGravityScale;
+        
+        // Re-enable collision with ground for landing
+        Collider2D myCollider = GetComponent<Collider2D>();
+        if (myCollider != null)
+        {
+            GameObject[] platforms = GameObject.FindGameObjectsWithTag("Ground");
+            foreach (GameObject platform in platforms)
+            {
+                Collider2D platformCollider = platform.GetComponent<Collider2D>();
+                if (platformCollider != null)
+                {
+                    Physics2D.IgnoreCollision(myCollider, platformCollider, false);
+                }
+            }
+        }
         
         // Ensure the velocity is reset to allow gravity to take effect
         rb.linearVelocity = new Vector2(0, 0);

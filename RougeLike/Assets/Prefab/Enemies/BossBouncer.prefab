@@ -204,7 +204,7 @@ MonoBehaviour:
   speed: 3
   fallGravityScale: 1
   attackTriggerWidth: 0.1
-  splashDamageRadius: 3
+  splashDamageRadius: 1.5
   splashDamage: 25
   playerLayer:
     serializedVersion: 2

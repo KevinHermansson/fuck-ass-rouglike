@@ -90,6 +90,13 @@ public class PlayerAttack : MonoBehaviour
             {
                 bossHealth.TakeDamage(currentDamage);
             }
+
+            // Check for boss heart health
+            BossHeart heartHealth = hitEnemies[i].GetComponent<BossHeart>();
+            if (heartHealth != null)
+            {
+                heartHealth.TakeDamage(currentDamage);
+            }
         }
         Debug.Log($"Player Attacked with {currentDamage} damage!");
     }
@@ -131,6 +138,11 @@ public class PlayerAttack : MonoBehaviour
                     MinibossHealth bossHealth = hits[i].GetComponent<MinibossHealth>();
                     if (bossHealth != null)
                         bossHealth.TakeDamage(currentDamage);
+
+                    // Check for boss heart health
+                    BossHeart heartHealth = hits[i].GetComponent<BossHeart>();
+                    if (heartHealth != null)
+                        heartHealth.TakeDamage(currentDamage);
                 }
                 Destroy(proj);
                 yield break;
