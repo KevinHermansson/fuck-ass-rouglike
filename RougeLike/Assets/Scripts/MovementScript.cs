@@ -62,13 +62,13 @@ public class MovementScript : MonoBehaviour
         float currentJumpHeight = (playerStats != null) ? playerStats.JumpHeight : jumpHeight;
 
         // jump once when pressed
-        if (Input.GetKeyDown(KeyCode.Space) && groundCheck >= 1)
+        if (Input.GetKey(KeyCode.Space) && groundCheck >= 1)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, currentJumpHeight);
 
-        if (Input.GetKeyDown(KeyCode.Space) && wallCheck >= 1)
+        if (Input.GetKey(KeyCode.Space) && wallCheck >= 1)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, currentJumpHeight);
 
-        if (Input.GetKeyDown(KeyCode.Space) && fancyGroundCheck)
+        if (Input.GetKey(KeyCode.Space) && fancyGroundCheck)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, currentJumpHeight);
 
 
