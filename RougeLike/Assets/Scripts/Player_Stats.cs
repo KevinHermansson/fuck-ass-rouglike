@@ -41,18 +41,39 @@ public class Player_Stats : MonoBehaviour
     private MovementScript movementScript;
     private bool isFlashing = false;
     private Color originalColor;
+    private static Player_Stats instance;
+
+    void Awake()
+    {
+        // Singleton pattern - keep only one player instance across scenes
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         movementScript = GetComponent<MovementScript>();
-        
+
+
         if (spriteRenderer != null)
         {
             originalColor = spriteRenderer.color;
         }
 
-        health = MaxHealth;
+        // Only set health to max on first creation, not when scene reloads
+        if (health == 0)
+        {
+            health = MaxHealth;
+        }
 
         if (healthBar == null)
         {
@@ -60,7 +81,7 @@ public class Player_Stats : MonoBehaviour
         }
         else
         {
-            healthBar.fillAmount = 1f;
+            healthBar.fillAmount = health / MaxHealth;
         }
     }
 

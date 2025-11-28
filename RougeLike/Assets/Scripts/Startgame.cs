@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
+
 
 public class Startgame : MonoBehaviour
 {
@@ -37,5 +39,10 @@ public class Startgame : MonoBehaviour
             playerInRange2 = false;
             startGamePanel.SetActive(false);
         }
+    }
+
+    public void StartGame()
+    {
+        SceneManager.LoadScene("BeginningScene");
     }
 }
