@@ -1,11 +1,13 @@
 using UnityEngine;
+using TMPro;
 
 public class BossSpawner : MonoBehaviour
 {
     public GameObject bouncerBossPrefab;
     public GameObject flyerBossPrefab;
+    public TextMeshProUGUI bossHPText; // Drag the BossHP text here
     public float spawnInterval = 5f;
-    public float flyerSpawnInterval = 3f; // Shorter interval for flyer bosses
+    public float flyerSpawnInterval = 2f; // Shorter interval for flyer bosses
     private float lastSpawnTime = 0f;
     private Camera mainCamera;
     private bool spawnBouncerNext = true;
@@ -19,11 +21,48 @@ public class BossSpawner : MonoBehaviour
     void Update()
     {
         float currentInterval = spawnBouncerNext ? spawnInterval : flyerSpawnInterval;
+        
+        // Get current boss HP from the canvas text
+        int bossHP = GetBossHP();
+        
+        // If BossHP < 7, make flyers spawn faster
+        if (bossHP < 7 && !spawnBouncerNext)
+        {
+            currentInterval = flyerSpawnInterval * 0.5f; // 50% faster
+        }
+        
+        // If BossHP < 4, make both bosses spawn more often
+        if (bossHP < 4)
+        {
+            currentInterval = currentInterval * 0.4f; // 40% faster for both
+        }
+        
         if (Time.time > lastSpawnTime + currentInterval)
         {
             lastSpawnTime = Time.time;
             SpawnBoss();
         }
+    }
+    
+    int GetBossHP()
+    {
+        // Try to read from the text component first
+        if (bossHPText != null && !string.IsNullOrEmpty(bossHPText.text))
+        {
+            if (int.TryParse(bossHPText.text, out int hp))
+            {
+                return hp;
+            }
+        }
+        
+        // Fallback: Find the BossHeart component in the scene
+        BossHeart bossHeart = FindObjectOfType<BossHeart>();
+        if (bossHeart != null)
+        {
+            return bossHeart.GetCurrentHeartCount();
+        }
+        
+        return 10; // Default value if nothing found
     }
 
     void SpawnBoss()
@@ -48,7 +87,7 @@ public class BossSpawner : MonoBehaviour
                 GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
                 if (playerObj != null)
                 {
-                    yPos = playerObj.transform.position.y;
+                    yPos = Mathf.Max(playerObj.transform.position.y, -3f);
                     Debug.Log("Flyer boss spawning at player Y level: " + yPos);
                 }
                 else
@@ -86,6 +125,32 @@ public class BossSpawner : MonoBehaviour
         }
         else
         {
+            // Get current boss HP to determine speed multiplier
+            int bossHP = GetBossHP();
+            float speedMultiplier = 1f;
+            
+            if (bossHP < 7)
+            {
+                speedMultiplier = 1.5f; // 50% faster
+            }
+            if (bossHP < 4)
+            {
+                speedMultiplier = 2f; // 100% faster (2x speed)
+            }
+            
+            // Apply speed multiplier to the spawned boss
+            BossSpawnMovement bouncerMovement = newBoss.GetComponent<BossSpawnMovement>();
+            if (bouncerMovement != null)
+            {
+                bouncerMovement.speed *= speedMultiplier;
+            }
+            
+            FlyerBoss flyerMovement = newBoss.GetComponent<FlyerBoss>();
+            if (flyerMovement != null)
+            {
+                flyerMovement.speed *= speedMultiplier;
+            }
+            
             // Flip both boss types if they spawn to the right of the player
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)
@@ -97,7 +162,7 @@ public class BossSpawner : MonoBehaviour
                 }
             }
             
-            Debug.Log("Successfully instantiated new boss: " + newBoss.name);
+            Debug.Log("Successfully instantiated new boss: " + newBoss.name + " with speed multiplier: " + speedMultiplier);
         }
     }
 }

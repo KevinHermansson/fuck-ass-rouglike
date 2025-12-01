@@ -150,7 +150,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossSpawner
   bouncerBossPrefab: {fileID: 8974957119336412367, guid: 2e2ff92b1b1ecd642a384c57cb987430, type: 3}
   flyerBossPrefab: {fileID: 2592642292432328351, guid: b47f613a60ce38548bce3c276c9a2810, type: 3}
+  bossHPText: {fileID: 4343970916942691777}
   spawnInterval: 5
+  flyerSpawnInterval: 2
 --- !u!68 &8587682123128788232
 EdgeCollider2D:
   m_ObjectHideFlags: 0

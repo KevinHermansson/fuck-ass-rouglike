@@ -130,6 +130,9 @@ public class BossHeartSpawner : MonoBehaviour
         float randomX = Random.Range(squareBounds.min.x, squareBounds.max.x);
         float randomY = Random.Range(squareBounds.min.y, squareBounds.max.y);
         
+        // Clamp Y position to not go below -3
+        randomY = Mathf.Max(randomY, -3f);
+        
         // Make sure heart spawns above the square (in front on Z-axis)
         float heartZ = transform.position.z - 1f;
         

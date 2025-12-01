@@ -149,6 +149,11 @@ public class BossHeart : MonoBehaviour
         }
     }
     
+    public int GetCurrentHeartCount()
+    {
+        return currentHeartCount;
+    }
+    
     void Die()
     {
         Debug.Log("Boss Heart defeated! All hearts depleted!");

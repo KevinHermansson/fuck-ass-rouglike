@@ -7,6 +7,7 @@ public class BossSpawnMovement : MonoBehaviour
     public float attackTriggerWidth = 0f; // How close the player needs to be on the X-axis to trigger the attack
     public float splashDamageRadius = 2f; // The radius of the splash damage on impact
     public float splashDamage = 25f; // The damage dealt by the splash attack
+    public float collisionDamage = 15f; // Damage dealt when player collides with boss while flying
     public LayerMask playerLayer; // Set this to the Player layer in the Inspector
 
     private int direction = 1; // 1 for right, -1 for left
@@ -18,6 +19,8 @@ public class BossSpawnMovement : MonoBehaviour
     private Animator animator;
     private bool isAttacking = false; // This flag now means "is in the attack-and-fall sequence"
     private Transform player;
+    private Collider2D triggerCollider; // Trigger collider for player damage
+    private Collider2D physicsCollider; // Physics collider for ground collision
 
     void Start()
     {
@@ -29,31 +32,55 @@ public class BossSpawnMovement : MonoBehaviour
         // Ensure boss doesn't fall initially
         rb.gravityScale = 0;
         
+        // Get both colliders - assumes first is trigger, second is physics
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        if (colliders.Length >= 2)
+        {
+            // Find trigger and physics colliders
+            foreach (Collider2D col in colliders)
+            {
+                if (col.isTrigger)
+                    triggerCollider = col;
+                else
+                    physicsCollider = col;
+            }
+        }
+        else if (colliders.Length == 1)
+        {
+            // If only one collider exists, use it as trigger
+            triggerCollider = colliders[0];
+            triggerCollider.isTrigger = true;
+        }
+        
         // Find the player
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
             player = playerObj.transform;
-
-            Collider2D myCollider = GetComponent<Collider2D>();
             
-            // Ignore collision with the player
+            // Set direction based on player position
+            // If boss is left of player, move right (1). If boss is right of player, move left (-1).
+            direction = transform.position.x < player.position.x ? 1 : -1;
+            
+            // Ignore physical collision with the player using physics collider only
             Collider2D playerCollider = player.GetComponent<Collider2D>();
-            if (myCollider != null && playerCollider != null)
+            if (physicsCollider != null && playerCollider != null)
             {
-                Physics2D.IgnoreCollision(myCollider, playerCollider, true);
+                Physics2D.IgnoreCollision(physicsCollider, playerCollider, true);
             }
             
             // Ignore collision with all enemies
-            if (myCollider != null)
+            if (physicsCollider != null)
             {
                 GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
                 foreach (GameObject enemy in enemies)
                 {
                     Collider2D enemyCollider = enemy.GetComponent<Collider2D>();
-                    if (enemyCollider != null && enemyCollider != myCollider)
+                    if (enemyCollider != null && enemyCollider != physicsCollider && enemyCollider != triggerCollider)
                     {
-                        Physics2D.IgnoreCollision(myCollider, enemyCollider, true);
+                        Physics2D.IgnoreCollision(physicsCollider, enemyCollider, true);
+                        if (triggerCollider != null)
+                            Physics2D.IgnoreCollision(triggerCollider, enemyCollider, true);
                     }
                 }
                 
@@ -64,7 +91,9 @@ public class BossSpawnMovement : MonoBehaviour
                     Collider2D platformCollider = platform.GetComponent<Collider2D>();
                     if (platformCollider != null)
                     {
-                        Physics2D.IgnoreCollision(myCollider, platformCollider, true);
+                        Physics2D.IgnoreCollision(physicsCollider, platformCollider, true);
+                        if (triggerCollider != null)
+                            Physics2D.IgnoreCollision(triggerCollider, platformCollider, true);
                     }
                 }
                 
@@ -75,7 +104,9 @@ public class BossSpawnMovement : MonoBehaviour
                     Collider2D fancyCollider = fancyPlatform.GetComponent<Collider2D>();
                     if (fancyCollider != null)
                     {
-                        Physics2D.IgnoreCollision(myCollider, fancyCollider, true);
+                        Physics2D.IgnoreCollision(physicsCollider, fancyCollider, true);
+                        if (triggerCollider != null)
+                            Physics2D.IgnoreCollision(triggerCollider, fancyCollider, true);
                     }
                 }
             }
@@ -172,9 +203,8 @@ public class BossSpawnMovement : MonoBehaviour
         // Enable gravity to make the enemy fall
         rb.gravityScale = fallGravityScale;
         
-        // Re-enable collision with ground for landing
-        Collider2D myCollider = GetComponent<Collider2D>();
-        if (myCollider != null)
+        // Re-enable collision with ground for landing using physics collider
+        if (physicsCollider != null)
         {
             GameObject[] platforms = GameObject.FindGameObjectsWithTag("Ground");
             foreach (GameObject platform in platforms)
@@ -182,7 +212,7 @@ public class BossSpawnMovement : MonoBehaviour
                 Collider2D platformCollider = platform.GetComponent<Collider2D>();
                 if (platformCollider != null)
                 {
-                    Physics2D.IgnoreCollision(myCollider, platformCollider, false);
+                    Physics2D.IgnoreCollision(physicsCollider, platformCollider, false);
                 }
             }
         }
@@ -193,6 +223,20 @@ public class BossSpawnMovement : MonoBehaviour
         Debug.Log("Boss started falling! Gravity scale: " + rb.gravityScale);
     }
 
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        // Check if we trigger with the player while flying (not attacking)
+        if (!isAttacking && collision.gameObject.CompareTag("Player"))
+        {
+            Player_Stats playerStats = collision.gameObject.GetComponent<Player_Stats>();
+            if (playerStats != null)
+            {
+                playerStats.TakeDamage(collisionDamage);
+                Debug.Log($"Bouncer boss hit player for {collisionDamage} damage while flying!");
+            }
+        }
+    }
+    
     void OnCollisionEnter2D(Collision2D collision)
     {
         // Check if we are in the attack/fall sequence and if the object we hit is tagged as "Ground"

@@ -141,8 +141,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c6048510a16e374ea7a2ee53eb5b8d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossHeart
-  health: 1
-  maxHealth: 1
+  health: 200
+  maxHealth: 200
   pulseScale: 1.3
   pulseDuration: 0.2
   heartCounterText: {fileID: 0}
