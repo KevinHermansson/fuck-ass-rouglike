@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6985193542303420929}
   - component: {fileID: 7530661179688961523}
   - component: {fileID: 8689913556635290206}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Heart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 8911430075030092057}
   - component: {fileID: 3960813254458328886}
   - component: {fileID: 5203962903024985823}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ GameObject:
   - component: {fileID: 4353442013958866686}
   - component: {fileID: 3685905379459225242}
   - component: {fileID: 1918385810867715168}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -329,7 +329,7 @@ GameObject:
   - component: {fileID: 28814378680843905}
   - component: {fileID: 5937798894209704784}
   - component: {fileID: 6034018812266194477}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Corn
   m_TagString: enemy
   m_Icon: {fileID: 0}

@@ -20,10 +20,17 @@ public class BossSpawner : MonoBehaviour
 
     void Update()
     {
-        float currentInterval = spawnBouncerNext ? spawnInterval : flyerSpawnInterval;
-        
         // Get current boss HP from the canvas text
         int bossHP = GetBossHP();
+        
+        // Stop spawning if boss HP is 0 or less
+        if (bossHP <= 0)
+        {
+            
+            return;
+        }
+        
+        float currentInterval = spawnBouncerNext ? spawnInterval : flyerSpawnInterval;
         
         // If BossHP < 7, make flyers spawn faster
         if (bossHP < 7 && !spawnBouncerNext)
