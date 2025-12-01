@@ -26,11 +26,13 @@ public class Miniboss_Movement : MonoBehaviour
     private float minibossBallSpawnTimer;
 
     public LayerMask playerLayer; // Layer mask for player
+    public Collider2D activationTrigger; // Assign the trigger collider that activates the miniboss
     
     private float attackTimer = 0f;
     private float teleportTimer = 0f;
     private bool isAttacking = false;
     private bool isTeleporting = false;
+    private bool isActivated = false; // Whether the miniboss has been activated
     private Transform player;
     private int direction = 1; // 1 for right, -1 for left
     private Camera mainCamera;
@@ -60,6 +62,9 @@ public class Miniboss_Movement : MonoBehaviour
 
     void Update()
     {
+        // Don't do anything if not activated yet
+        if (!isActivated) return;
+        
         if (isAttacking || healthScript == null) return; // Don't do anything while attacking or if health script is missing
 
         // Handle all timers
@@ -282,6 +287,38 @@ public class Miniboss_Movement : MonoBehaviour
             animator.SetBool("Spawn", false);
         }
         isTeleporting = false;
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Check if miniboss collided with a wall or ground
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Wall"))
+        {
+            // Change direction
+            direction = -direction;
+            
+            // Flip sprite
+            if (direction == 1)
+            {
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+            else
+            {
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+            
+            Debug.Log("Miniboss hit wall and changed direction!");
+        }
+    }
+
+    // This method can be called by another script when the player enters the activation trigger
+    public void ActivateMiniboss()
+    {
+        if (!isActivated)
+        {
+            isActivated = true;
+            Debug.Log("Miniboss activated!");
+        }
     }
 }
 

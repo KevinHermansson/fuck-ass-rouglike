@@ -31,7 +31,9 @@ public class Corn_movement : MonoBehaviour
             player = p.transform;
 
         if (rb != null)
+        {
             rb.linearVelocity = Vector2.zero;
+        }
 
         mainCamera = Camera.main;
         if (mainCamera != null)
@@ -203,16 +205,6 @@ public class Corn_movement : MonoBehaviour
         {
             // Stop moving when in sweet spot
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
-        }
-
-        // Clamp position to camera bounds (safety check)
-        if (rb.position.x < leftBound)
-        {
-            rb.position = new Vector2(leftBound, rb.position.y);
-        }
-        else if (rb.position.x > rightBound)
-        {
-            rb.position = new Vector2(rightBound, rb.position.y);
         }
     }
 

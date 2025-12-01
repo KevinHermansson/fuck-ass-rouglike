@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5177844243351564632}
   - component: {fileID: 3160445962862340871}
   - component: {fileID: 6364318799883005913}
+  - component: {fileID: -3985025244548515377}
   m_Layer: 7
   m_Name: Miniboss
   m_TagString: enemy
@@ -223,6 +224,7 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
+  activationTrigger: {fileID: 0}
 --- !u!114 &3160445962862340871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,6 +272,19 @@ MonoBehaviour:
   minibossPebblePrefab: {fileID: 5551639980324904637, guid: 1205c0e7318ac6f4d91dc8339611de42, type: 3}
   flashDuration: 0.1
   flashColor: {r: 1, g: 0, b: 0, a: 0.5}
+--- !u!114 &-3985025244548515377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204869824561539862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aa8a115c11c00e4dae87e3c1457a603, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MinibossActivationTrigger
+  miniboss: {fileID: 5177844243351564632}
 --- !u!1 &3811941564161638346
 GameObject:
   m_ObjectHideFlags: 0

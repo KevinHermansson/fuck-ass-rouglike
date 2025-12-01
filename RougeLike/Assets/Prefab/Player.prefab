@@ -188,7 +188,7 @@ MonoBehaviour:
   moveSpeed: 5
   knockbackDuration: 0.3
   rb: {fileID: 8023689683413326141}
-  animator: {fileID: 0}
+  animator: {fileID: 4002156555219999331}
   groundCheck: 0
   wallCheck: 0
   fancyGroundCheck: 0
