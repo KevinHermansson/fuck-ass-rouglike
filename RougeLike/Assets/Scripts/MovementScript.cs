@@ -149,7 +149,7 @@ public class MovementScript : MonoBehaviour
         }
 
         // Update groundCheck based on what feet are touching
-        if (touchingGround || touchingPlatform)
+        if (touchingGround)
         {
             groundCheck = 1;
         }
@@ -177,7 +177,7 @@ public class MovementScript : MonoBehaviour
             if (other.CompareTag("fancyPlatform"))
             {
                 fancyGroundCheck = true;
-                groundCheck = 1;
+
             }
         }
     }
@@ -216,27 +216,41 @@ public class MovementScript : MonoBehaviour
 
     private IEnumerator DisablePlayerCollider(float disableTime)
     {
-        // Temporarily disable both the feet trigger AND main collider to allow dropping through
-        if (feetTrigger != null)
-            feetTrigger.enabled = false;
+        // Find all fancyPlatform colliders and temporarily ignore collision with them
+        GameObject[] platforms = GameObject.FindGameObjectsWithTag("fancyPlatform");
 
-        if (PlayerCollider != null)
-            PlayerCollider.enabled = false;
+        foreach (GameObject platform in platforms)
+        {
+            Collider2D platformCollider = platform.GetComponent<Collider2D>();
+            if (platformCollider != null)
+            {
+                if (PlayerCollider != null)
+                    Physics2D.IgnoreCollision(PlayerCollider, platformCollider, true);
+                if (feetTrigger != null)
+                    Physics2D.IgnoreCollision(feetTrigger, platformCollider, true);
+            }
+        }
 
         yield return new WaitForSeconds(disableTime);
 
-        if (feetTrigger != null)
-            feetTrigger.enabled = true;
-
-        if (PlayerCollider != null)
-            PlayerCollider.enabled = true;
+        // Re-enable collisions with fancyPlatforms
+        foreach (GameObject platform in platforms)
+        {
+            Collider2D platformCollider = platform.GetComponent<Collider2D>();
+            if (platformCollider != null)
+            {
+                if (PlayerCollider != null)
+                    Physics2D.IgnoreCollision(PlayerCollider, platformCollider, false);
+                if (feetTrigger != null)
+                    Physics2D.IgnoreCollision(feetTrigger, platformCollider, false);
+            }
+        }
     }
 
     public void dropThroughPlatform()
     {
-        bool canDrop = (feetTrigger != null ? feetTrigger.enabled : true) && (PlayerCollider != null ? PlayerCollider.enabled : true);
-        if (Input.GetKey(KeyCode.S) && fancyGroundCheck && canDrop)
-            StartCoroutine(DisablePlayerCollider(0.30f));
+        if (Input.GetKey(KeyCode.S) && fancyGroundCheck && groundCheck != 1)
+            StartCoroutine(DisablePlayerCollider(0.40f));
     }
 
     // UPDATED: additive knockback
