@@ -12,14 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5e324bed10b7c948a4e19c237d03ed8, type: 3}
   m_Name: seed1
   m_EditorClassIdentifier: Assembly-CSharp::SeedItem
-<<<<<<< Updated upstream:RougeLike/Assets/Items/Seeds/seed1.asset
   Id: 
   DisplayName: 
   Icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-=======
-  Id: Test_Seed_01
-  DisplayName: Test Seed
-  Icon: {fileID: 21300204, guid: 7810966f0f690954c87305933cabf2b0, type: 3}
->>>>>>> Stashed changes:RougeLike/Assets/Items/Seeds/TestSeed.asset
   Category: 1
   Effect: {fileID: 11400000, guid: 8369bfcb91fe5a34b9b0c3426474b6c8, type: 2}
