@@ -44,6 +44,22 @@ public class PebblePickup : MonoBehaviour
                 Physics2D.IgnoreCollision(myCollider, enemyCollider, true); // Ignore collision
             }
         }
+
+        // Make sure pebble has a Rigidbody2D for physics collision with ground
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody2D>();
+        }
+        rb.gravityScale = 1f;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        // Make sure collider is NOT a trigger so it can collide with ground
+        if (myCollider != null)
+        {
+            myCollider.isTrigger = false;
+        }
     }
 
     void Update()

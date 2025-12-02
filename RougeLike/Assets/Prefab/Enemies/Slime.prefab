@@ -295,8 +295,8 @@ MonoBehaviour:
   stopDistance: 10
   knockbackForce: 4
   attackCooldown: 1.5
-  rb: {fileID: 0}
-  animator: {fileID: 0}
+  rb: {fileID: 354005316309213436}
+  animator: {fileID: 4400181488745667528}
   damage: 5
 --- !u!95 &4400181488745667528
 Animator:

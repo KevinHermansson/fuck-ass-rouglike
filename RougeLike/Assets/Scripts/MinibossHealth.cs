@@ -32,6 +32,33 @@ public class MinibossHealth : MonoBehaviour
         }
 
         UpdateHealthText();
+        
+        // Hide health bar initially
+        HideHealthBar();
+    }
+    
+    public void ShowHealthBar()
+    {
+        if (Healthbarfordummies != null)
+        {
+            Healthbarfordummies.transform.parent.gameObject.SetActive(true);
+        }
+        if (healthBarBorder != null)
+        {
+            healthBarBorder.SetActive(true);
+        }
+    }
+    
+    public void HideHealthBar()
+    {
+        if (Healthbarfordummies != null)
+        {
+            Healthbarfordummies.transform.parent.gameObject.SetActive(false);
+        }
+        if (healthBarBorder != null)
+        {
+            healthBarBorder.SetActive(false);
+        }
     }
 
     void Update()
@@ -116,18 +143,7 @@ public class MinibossHealth : MonoBehaviour
     {
         Debug.Log("Miniboss defeated!");
         // Hide health bar
-        if (Healthbarfordummies != null)
-        {
-            Healthbarfordummies.gameObject.SetActive(false);
-        }
-        if (healthText != null)
-        {
-            healthText.gameObject.SetActive(false);
-        }
-        if (healthBarBorder != null)
-        {
-            healthBarBorder.gameObject.SetActive(false);
-        }
+        HideHealthBar();
         
         // Drop pebbles
         if (PebbleManager.Instance != null)

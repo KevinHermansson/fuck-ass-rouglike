@@ -59,6 +59,8 @@ public class Slime_movement : MonoBehaviour
 
     void Update()
     {
+        if (player == null) return;
+        
         HandleAnimation(rb, player);
         HandleAttack();
     }
@@ -124,6 +126,8 @@ public class Slime_movement : MonoBehaviour
 
     private void HandleAnimation(Rigidbody2D rb, Transform player)
     {
+        if (player == null) return;
+        
         bool isMoving = rb.linearVelocity.x != 0 && !animator.GetBool("isAttack");
         animator.SetBool("isMoving", isMoving);
 
@@ -148,9 +152,10 @@ public class Slime_movement : MonoBehaviour
 
     void FixedUpdate()
     {
-        float distance = Vector2.Distance(rb.position, (Vector2)player.position);
         if (player == null || rb == null)
             return;
+            
+        float distance = Vector2.Distance(rb.position, (Vector2)player.position);
 
         // Start chasing if player is within awake distance
         if (!isChasing && distance <= awakeDistance)

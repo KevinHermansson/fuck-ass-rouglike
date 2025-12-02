@@ -164,7 +164,7 @@ public class FlyingBat_movement : MonoBehaviour
             return;
         }
          
-        if (tag == "fancyPlatform" || tag == "Wall")
+        if (tag == "fancyPlatform" || tag == "Wall" || tag == "Ground")
         {
             movingRight = !movingRight;
             Debug.Log($"Bat changed direction! Now moving right: {movingRight}");

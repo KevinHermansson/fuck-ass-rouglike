@@ -5,8 +5,8 @@ public class Miniboss_Movement : MonoBehaviour
 {
     public Animator animator;
     public float speed = 5f;
-    public float leftBound = -8f;
-    public float rightBound = 8f;
+    public Transform pointA; // First patrol point - drag in Inspector
+    public Transform pointB; // Second patrol point - drag in Inspector
     public float attackInterval = 4f; // How often to attack
     public float teleportInterval = 8f; // How often to teleport when enraged
     public float attackAnimationDuration = 1f; // How long the attack animation takes
@@ -67,6 +67,12 @@ public class Miniboss_Movement : MonoBehaviour
         
         if (isAttacking || healthScript == null) return; // Don't do anything while attacking or if health script is missing
 
+        // Move when not teleporting
+        if (!isTeleporting)
+        {
+            Move();
+        }
+
         // Handle all timers
         attackTimer -= Time.deltaTime;
         minibossBallSpawnTimer -= Time.deltaTime;
@@ -99,32 +105,32 @@ public class Miniboss_Movement : MonoBehaviour
             SpawnMinibossBall();
             minibossBallSpawnTimer = minibossBallSpawnInterval; // Reset timer
         }
-        // Move only if not performing another action and not in the middle of a teleport
-        else if (!isTeleporting)
-        {
-            Move();
-        }
     }
 
     void Move()
     {
+        if (pointA == null || pointB == null)
+        {
+            Debug.LogWarning("Point A or Point B not assigned!");
+            return;
+        }
+
+        // Move towards the current target
         transform.Translate(Vector2.right * direction * speed * Time.deltaTime);
 
-        if (transform.position.x >= rightBound)
+        // Check if reached point B (moving right)
+        if (direction == 1 && transform.position.x >= pointB.position.x)
         {
             direction = -1;
             transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
-        else if (transform.position.x <= leftBound)
+        // Check if reached point A (moving left)
+        else if (direction == -1 && transform.position.x <= pointA.position.x)
         {
             direction = 1;
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
     }
-
-    
-
-    
 
     IEnumerator AttackSequence()
     {
@@ -267,9 +273,12 @@ public class Miniboss_Movement : MonoBehaviour
     // This function should be called by an Animation Event during the 'Teleport' animation
     public void ChangePositionAndSpawn()
     {
-        // Move to a new random position
-        float randomX = Random.Range(leftBound, rightBound);
-        transform.position = new Vector3(randomX, transform.position.y, transform.position.z);
+        // Move to a new random position between the patrol points
+        if (pointA != null && pointB != null)
+        {
+            float randomX = Random.Range(pointA.position.x, pointB.position.x);
+            transform.position = new Vector3(randomX, transform.position.y, transform.position.z);
+        }
 
         if (animator != null)
         {
@@ -317,7 +326,10 @@ public class Miniboss_Movement : MonoBehaviour
         if (!isActivated)
         {
             isActivated = true;
-            Debug.Log("Miniboss activated!");
+            // Start moving toward point B
+            direction = 1;
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            Debug.Log("Miniboss activated! Moving toward Point B");
         }
     }
 }
