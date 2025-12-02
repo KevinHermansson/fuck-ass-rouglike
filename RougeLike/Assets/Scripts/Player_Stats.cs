@@ -6,6 +6,7 @@ public class Player_Stats : MonoBehaviour
 {
     public float health = 100;
     public Image healthBar;
+    public GameObject gameOverUI; // Drag the Game Over UI GameObject here
     public float flashDuration = 0.1f;
     public Color flashColor = new Color(1f, 0f, 0f, 0.5f);
 
@@ -83,6 +84,12 @@ public class Player_Stats : MonoBehaviour
         {
             healthBar.fillAmount = health / MaxHealth;
         }
+
+        // Hide Game Over UI at start
+        if (gameOverUI != null)
+        {
+            gameOverUI.SetActive(false);
+        }
     }
 
     void Update()
@@ -143,6 +150,12 @@ public class Player_Stats : MonoBehaviour
     void Die()
     {
         Debug.Log("Player died!");
+        
+        // Show Game Over UI
+        if (gameOverUI != null)
+        {
+            gameOverUI.SetActive(true);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
