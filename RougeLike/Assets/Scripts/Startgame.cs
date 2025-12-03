@@ -45,4 +45,6 @@ public class Startgame : MonoBehaviour
     {
         SceneManager.LoadScene("BeginningScene");
     }
+
+    
 }
