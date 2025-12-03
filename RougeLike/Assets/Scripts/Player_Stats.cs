@@ -43,6 +43,7 @@ public class Player_Stats : MonoBehaviour
     private bool isFlashing = false;
     private Color originalColor;
     private static Player_Stats instance;
+    private bool isDead = false;
 
     void Awake()
     {
@@ -149,12 +150,67 @@ public class Player_Stats : MonoBehaviour
 
     void Die()
     {
+        if (isDead) return; // Prevent multiple calls
+        isDead = true;
+
         Debug.Log("Player died!");
-        
+
+        // Freeze player movement
+        if (movementScript != null)
+        {
+            movementScript.enabled = false;
+        }
+
+        // Stop player's rigidbody
+        Rigidbody2D playerRb = GetComponent<Rigidbody2D>();
+        if (playerRb != null)
+        {
+            playerRb.linearVelocity = Vector2.zero;
+            playerRb.angularVelocity = 0f;
+            playerRb.bodyType = RigidbodyType2D.Static;
+        }
+
+        // Freeze all enemies
+        FreezeAllEnemies();
+
         // Show Game Over UI
         if (gameOverUI != null)
         {
             gameOverUI.SetActive(true);
+        }
+    }
+
+    void FreezeAllEnemies()
+    {
+        // Find and freeze all enemy movement scripts
+        MonoBehaviour[] allScripts = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
+
+        foreach (MonoBehaviour script in allScripts)
+        {
+            // Freeze common enemy movement scripts
+            if (script is Corn_movement ||
+                script is FlyingBat_movement ||
+                script is Miniboss_Movement ||
+                script is FlyerBoss ||
+                script.GetType().Name.Contains("movement") ||
+                script.GetType().Name.Contains("Movement") ||
+                script.GetType().Name.Contains("Behavior"))
+            {
+                script.enabled = false;
+            }
+        }
+
+        // Also freeze all Rigidbody2D components on enemies
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            Rigidbody2D enemyRb = enemy.GetComponent<Rigidbody2D>();
+            if (enemyRb != null)
+            {
+                enemyRb.linearVelocity = Vector2.zero;
+                enemyRb.angularVelocity = 0f;
+                enemyRb.bodyType = RigidbodyType2D.Static;
+            }
         }
     }
 
