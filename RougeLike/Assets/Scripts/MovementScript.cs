@@ -83,9 +83,10 @@ public class MovementScript : MonoBehaviour
         {
             inputVX = -moveSpeed;
 
-            // Set animator parameters for moving left
+            // Set left movement animation
             if (animator != null)
             {
+                animator.speed = 1f;
                 animator.SetBool("MovingLeft", true);
                 animator.SetBool("MovingRight", false);
             }
@@ -94,18 +95,20 @@ public class MovementScript : MonoBehaviour
         {
             inputVX = moveSpeed;
 
-            // Set animator parameters for moving right
+            // Set right movement animation
             if (animator != null)
             {
+                animator.speed = 1f;
                 animator.SetBool("MovingLeft", false);
                 animator.SetBool("MovingRight", true);
             }
         }
         else
         {
-            // Player is not moving (standing still)
+            // Player is not moving - freeze animation on current frame
             if (animator != null)
             {
+                animator.speed = 0f;
                 animator.SetBool("MovingLeft", false);
                 animator.SetBool("MovingRight", false);
             }

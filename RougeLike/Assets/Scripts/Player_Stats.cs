@@ -59,6 +59,15 @@ public class Player_Stats : MonoBehaviour
             return;
         }
     }
+    
+    void OnDestroy()
+    {
+        // Reset singleton when destroyed
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
 
     void Start()
     {
@@ -69,13 +78,12 @@ public class Player_Stats : MonoBehaviour
         if (spriteRenderer != null)
         {
             originalColor = spriteRenderer.color;
+            // Make sure sprite is visible when scene loads
+            spriteRenderer.enabled = true;
         }
 
-        // Only set health to max on first creation, not when scene reloads
-        if (health == 0)
-        {
-            health = MaxHealth;
-        }
+        // Reset health to max when scene loads
+        health = MaxHealth;
 
         if (healthBar == null)
         {
@@ -86,7 +94,7 @@ public class Player_Stats : MonoBehaviour
             healthBar.fillAmount = health / MaxHealth;
         }
 
-        // Hide Game Over UI at start
+        // Always hide Game Over UI when entering any scene
         if (gameOverUI != null)
         {
             gameOverUI.SetActive(false);
@@ -154,6 +162,7 @@ public class Player_Stats : MonoBehaviour
         isDead = true;
 
         Debug.Log("Player died!");
+<<<<<<< Updated upstream
 
         // Freeze player movement
         if (movementScript != null)
@@ -173,11 +182,23 @@ public class Player_Stats : MonoBehaviour
         // Freeze all enemies
         FreezeAllEnemies();
 
+=======
+        
+        // Hide player sprite
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.enabled = false;
+        }
+        
+>>>>>>> Stashed changes
         // Show Game Over UI
         if (gameOverUI != null)
         {
             gameOverUI.SetActive(true);
         }
+        
+        // Stop the game
+        Time.timeScale = 0f;
     }
 
     void FreezeAllEnemies()
