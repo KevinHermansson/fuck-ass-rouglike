@@ -162,7 +162,6 @@ public class Player_Stats : MonoBehaviour
         isDead = true;
 
         Debug.Log("Player died!");
-<<<<<<< Updated upstream
 
         // Freeze player movement
         if (movementScript != null)
@@ -179,18 +178,15 @@ public class Player_Stats : MonoBehaviour
             playerRb.bodyType = RigidbodyType2D.Static;
         }
 
-        // Freeze all enemies
-        FreezeAllEnemies();
-
-=======
-        
         // Hide player sprite
         if (spriteRenderer != null)
         {
             spriteRenderer.enabled = false;
         }
+
+        // Freeze all enemies
+        FreezeAllEnemies();
         
->>>>>>> Stashed changes
         // Show Game Over UI
         if (gameOverUI != null)
         {
