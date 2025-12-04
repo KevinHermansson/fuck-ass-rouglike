@@ -214,10 +214,10 @@ MonoBehaviour:
   flashDuration: 0.1
   flashColor: {r: 1, g: 0, b: 0, a: 0.5}
   BaseMoveSpeed: 5
-  BaseMaxHealth: 10
-  BaseAttackDamage: 16
-  BaseAttackSpeed: 8
-  BaseJumpHeight: 11
+  BaseMaxHealth: 50
+  BaseAttackDamage: 2
+  BaseAttackSpeed: 2
+  BaseJumpHeight: 8
   currentMoveSpeed: 0
   currentMaxHealth: 0
   currentAttackDamage: 16
