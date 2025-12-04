@@ -15,6 +15,9 @@ public class PebbleManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject); // Make PebbleManager persistent
+            
+            // Load saved pebbles immediately
+            pebbles = savedPebbles;
         }
         else
         {
@@ -24,41 +27,50 @@ public class PebbleManager : MonoBehaviour
     
     void Start()
     {
-        // Load saved pebbles
+        // Ensure pebbles are synced
         pebbles = savedPebbles;
         
         // Update UI with current pebble count
+        UpdateUI();
+    }
+    
+    void UpdateUI()
+    {
         if (PebbleUI.Instance != null)
         {
             PebbleUI.Instance.UpdatePebbleText(pebbles);
+        }
+        else
+        {
+            // Try to find PebbleUI if instance not set
+            PebbleUI ui = FindObjectOfType<PebbleUI>();
+            if (ui != null)
+            {
+                ui.UpdatePebbleText(pebbles);
+            }
         }
     }
 
     public void AddPebbles(int amount)
     {
         pebbles += amount;
-        savedPebbles = pebbles; // Save to static variable
+        savedPebbles = pebbles; // Save to static variable immediately
         
-        Debug.Log($"Pebbles added! Total: {pebbles}");
+        Debug.Log($"Pebbles added! Total: {pebbles}, Saved: {savedPebbles}");
 
-        // Try to find and update UI
+        // Update UI and play bump animation
+        UpdateUI();
+        
         if (PebbleUI.Instance != null)
         {
-            PebbleUI.Instance.UpdatePebbleText(pebbles);
             PebbleUI.Instance.PlayBump();
         }
         else
         {
-            // If PebbleUI not found, try to find it
             PebbleUI ui = FindObjectOfType<PebbleUI>();
             if (ui != null)
             {
-                ui.UpdatePebbleText(pebbles);
                 ui.PlayBump();
-            }
-            else
-            {
-                Debug.LogWarning("PebbleUI not found!");
             }
         }
     }

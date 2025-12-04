@@ -60,10 +60,26 @@ public class Upgrades : MonoBehaviour
         string buttonTag = EventSystem.current.currentSelectedGameObject.tag;
         Debug.Log($"Upgrade button clicked with tag: {buttonTag}");
 
+        // Check if PebbleManager exists
+        if (PebbleManager.Instance == null)
+        {
+            Debug.LogError("PebbleManager not found!");
+            return;
+        }
 
         switch (buttonTag)
         {
             case "Health":
+                // Check if player has enough pebbles
+                if (PebbleManager.Instance.pebbles < HealthCost)
+                {
+                    Debug.Log($"Not enough pebbles! Need {HealthCost}, have {PebbleManager.Instance.pebbles}");
+                    return;
+                }
+                
+                // Deduct cost
+                PebbleManager.Instance.pebbles -= (int)HealthCost;
+                
                 if (HealthLevel >= 2)
                 {
                     HealthCost = (int)(5 * Mathf.Pow(1.2f, HealthLevel));
@@ -81,6 +97,14 @@ public class Upgrades : MonoBehaviour
                 }
                 break;
             case "Damage":
+                if (PebbleManager.Instance.pebbles < DamageCost)
+                {
+                    Debug.Log($"Not enough pebbles! Need {DamageCost}, have {PebbleManager.Instance.pebbles}");
+                    return;
+                }
+                
+                PebbleManager.Instance.pebbles -= (int)DamageCost;
+                
                 if (DamageLevel >= 2)
                 {
                     DamageCost = (int)(5 * Mathf.Pow(1.2f, DamageLevel));
@@ -97,6 +121,14 @@ public class Upgrades : MonoBehaviour
                 }
                 break;
             case "AttackSpeed":
+                if (PebbleManager.Instance.pebbles < AttackSpeedCost)
+                {
+                    Debug.Log($"Not enough pebbles! Need {AttackSpeedCost}, have {PebbleManager.Instance.pebbles}");
+                    return;
+                }
+                
+                PebbleManager.Instance.pebbles -= (int)AttackSpeedCost;
+                
                 if (AttackSpeedLevel >= 2)
                 {
                     AttackSpeedCost = (int)(5 * Mathf.Pow(1.2f, AttackSpeedLevel));
@@ -113,6 +145,14 @@ public class Upgrades : MonoBehaviour
                 }
                 break;
             case "Speed":
+                if (PebbleManager.Instance.pebbles < SpeedCost)
+                {
+                    Debug.Log($"Not enough pebbles! Need {SpeedCost}, have {PebbleManager.Instance.pebbles}");
+                    return;
+                }
+                
+                PebbleManager.Instance.pebbles -= (int)SpeedCost;
+                
                 if (SpeedLevel >= 2)
                 {
                     SpeedCost = (int)(5 * Mathf.Pow(1.2f, SpeedLevel));
@@ -125,6 +165,14 @@ public class Upgrades : MonoBehaviour
                 Debug.Log("Speed upgraded");
                 break;
             case "JumpHeight":
+                if (PebbleManager.Instance.pebbles < JumpHeightCost)
+                {
+                    Debug.Log($"Not enough pebbles! Need {JumpHeightCost}, have {PebbleManager.Instance.pebbles}");
+                    return;
+                }
+                
+                PebbleManager.Instance.pebbles -= (int)JumpHeightCost;
+                
                 if (JumpHeightLevel >= 2)
                 {
                     JumpHeightCost = (int)(5 * Mathf.Pow(1.2f, JumpHeightLevel));
@@ -140,6 +188,12 @@ public class Upgrades : MonoBehaviour
                     Debug.LogError("playerStats is null! Please assign Player_Stats in Inspector.");
                 }
                 break;
+        }
+        
+        // Update UI after purchase
+        if (PebbleUI.Instance != null)
+        {
+            PebbleUI.Instance.UpdatePebbleText(PebbleManager.Instance.pebbles);
         }
     }
 

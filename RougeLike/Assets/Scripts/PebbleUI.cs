@@ -25,7 +25,24 @@ public class PebbleUI : MonoBehaviour
 
         originalScale = bumpTarget.localScale;
 
-        UpdatePebbleText(0);
+        // Load pebble count from PebbleManager
+        if (PebbleManager.Instance != null)
+        {
+            UpdatePebbleText(PebbleManager.Instance.pebbles);
+        }
+        else
+        {
+            UpdatePebbleText(0);
+        }
+    }
+    
+    void OnEnable()
+    {
+        // Update when UI becomes active
+        if (PebbleManager.Instance != null && pebbleText != null)
+        {
+            UpdatePebbleText(PebbleManager.Instance.pebbles);
+        }
     }
 
     public void UpdatePebbleText(int amount)
