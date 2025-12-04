@@ -19758,11 +19758,7 @@ PrefabInstance:
     - target: {fileID: 4147379036516642851, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
       propertyPath: gameOverUI
       value: 
-<<<<<<< Updated upstream
-      objectReference: {fileID: 1992781298}
-=======
       objectReference: {fileID: 1905827209}
->>>>>>> Stashed changes
     - target: {fileID: 4147379036516642851, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
       propertyPath: BaseAttackDamage
       value: 2
@@ -20211,15 +20207,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 863cce257bc33be48a05ab07caa200e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PersistentCanvas
-<<<<<<< Updated upstream
---- !u!1 &1992781298 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6348541519615681029, guid: 171b665f467d82341a9dd9985c8b8b52, type: 3}
-=======
 --- !u!224 &1953279477 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5278154925229877022, guid: 171b665f467d82341a9dd9985c8b8b52, type: 3}
->>>>>>> Stashed changes
   m_PrefabInstance: {fileID: 4061162392298826357}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2062853312
@@ -20564,11 +20554,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-<<<<<<< Updated upstream
     - target: {fileID: 6348541519615681029, guid: 171b665f467d82341a9dd9985c8b8b52, type: 3}
       propertyPath: m_IsActive
       value: 0
-=======
+      objectReference: {fileID: 0}
     - target: {fileID: 7444675642214415150, guid: 171b665f467d82341a9dd9985c8b8b52, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -20576,7 +20565,6 @@ PrefabInstance:
     - target: {fileID: 7444675642214415150, guid: 171b665f467d82341a9dd9985c8b8b52, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: RestartGame
->>>>>>> Stashed changes
       objectReference: {fileID: 0}
     - target: {fileID: 7789339858284956075, guid: 171b665f467d82341a9dd9985c8b8b52, type: 3}
       propertyPath: m_Color.a
