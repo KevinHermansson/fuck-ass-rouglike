@@ -12,7 +12,15 @@ public class PebbleUI : MonoBehaviour
 
     void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // Make PebbleUI persistent across scenes
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     void Start()

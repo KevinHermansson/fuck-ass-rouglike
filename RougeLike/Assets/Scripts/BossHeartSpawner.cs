@@ -11,6 +11,7 @@ public class BossHeartSpawner : MonoBehaviour
     private Transform heartTransform;
     private Bounds squareBounds;
     private SpriteRenderer heartRenderer;
+    private bool hasStarted = false;
 
     void Start()
     {
@@ -78,8 +79,40 @@ public class BossHeartSpawner : MonoBehaviour
         // Get the heart's sprite renderer
         heartRenderer = heartTransform.GetComponent<SpriteRenderer>();
         
-        // Set initial random position above the boss square
-        SetRandomPosition();
+        // Hide heart initially until player enters
+        if (heartRenderer != null)
+        {
+            heartRenderer.enabled = false;
+        }
+        
+        Collider2D heartCollider = heartTransform.GetComponent<Collider2D>();
+        if (heartCollider != null)
+        {
+            heartCollider.enabled = false;
+        }
+    }
+    
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player") && !hasStarted)
+        {
+            hasStarted = true;
+            // Position heart and make it visible when player enters
+            SetRandomPosition();
+            
+            if (heartRenderer != null)
+            {
+                heartRenderer.enabled = true;
+            }
+            
+            Collider2D heartCollider = heartTransform.GetComponent<Collider2D>();
+            if (heartCollider != null)
+            {
+                heartCollider.enabled = true;
+            }
+            
+            Debug.Log("Player entered boss arena - heart spawned!");
+        }
     }
 
     // Call this method to move the heart to a new position

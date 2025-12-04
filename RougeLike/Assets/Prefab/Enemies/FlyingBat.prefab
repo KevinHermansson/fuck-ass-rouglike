@@ -470,9 +470,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   speed: 3
   edgeBuffer: 1
-  stonePrefab: {fileID: 1909948192791416431, guid: 3420b1f039b3c9240a5551aea19ca40a, type: 3}
-  minDropInterval: 2
-  maxDropInterval: 4
+  stonePrefab: {fileID: 1909948192791416431, guid: d382671e249717e4088e66ac2a9b5df1, type: 3}
+  minDropInterval: 1
+  maxDropInterval: 3
   rb: {fileID: 7999197442871093795}
 --- !u!50 &7999197442871093795
 Rigidbody2D:
