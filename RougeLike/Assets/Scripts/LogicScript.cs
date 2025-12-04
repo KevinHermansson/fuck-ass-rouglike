@@ -4,14 +4,37 @@ using TMPro;
 
 public class LogicScript : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // Static variable to persist across scene loads and death
+    private static int savedPebbleCounter = 0;
+    
     public int PebbleCounter;
     public TextMeshProUGUI PebbleCounterText;
    
-   public void UpdatePebbleCounter()
+    void Start()
     {
-       PebbleCounter = PebbleCounter + 1;
-       PebbleCounterText.text = PebbleCounter.ToString();
-   }
-
+        // Load the saved pebble count
+        PebbleCounter = savedPebbleCounter;
+        UpdateDisplay();
+    }
+   
+    public void UpdatePebbleCounter()
+    {
+        PebbleCounter = PebbleCounter + 1;
+        savedPebbleCounter = PebbleCounter; // Save to static variable
+        UpdateDisplay();
+    }
+    
+    void UpdateDisplay()
+    {
+        if (PebbleCounterText != null)
+        {
+            PebbleCounterText.text = PebbleCounter.ToString();
+        }
+    }
+    
+    // Call this to reset pebbles (if needed for new game)
+    public static void ResetPebbles()
+    {
+        savedPebbleCounter = 0;
+    }
 }

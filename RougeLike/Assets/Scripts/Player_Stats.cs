@@ -43,6 +43,7 @@ public class Player_Stats : MonoBehaviour
     private bool isFlashing = false;
     private Color originalColor;
     private static Player_Stats instance;
+    private bool isDead = false;
 
     void Awake()
     {
@@ -58,6 +59,15 @@ public class Player_Stats : MonoBehaviour
             return;
         }
     }
+    
+    void OnDestroy()
+    {
+        // Reset singleton when destroyed
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
 
     void Start()
     {
@@ -68,12 +78,25 @@ public class Player_Stats : MonoBehaviour
         if (spriteRenderer != null)
         {
             originalColor = spriteRenderer.color;
+            // Make sure sprite is visible when scene loads
+            spriteRenderer.enabled = true;
         }
 
-        // Only set health to max on first creation, not when scene reloads
-        if (health == 0)
+        // Reset death state and health when scene loads
+        isDead = false;
+        health = MaxHealth;
+        
+        // Re-enable movement script
+        if (movementScript != null)
         {
-            health = MaxHealth;
+            movementScript.enabled = true;
+        }
+        
+        // Reset rigidbody to dynamic
+        Rigidbody2D playerRb = GetComponent<Rigidbody2D>();
+        if (playerRb != null)
+        {
+            playerRb.bodyType = RigidbodyType2D.Dynamic;
         }
 
         if (healthBar == null)
@@ -85,7 +108,7 @@ public class Player_Stats : MonoBehaviour
             healthBar.fillAmount = health / MaxHealth;
         }
 
-        // Hide Game Over UI at start
+        // Always hide Game Over UI when entering any scene
         if (gameOverUI != null)
         {
             gameOverUI.SetActive(false);
@@ -149,12 +172,76 @@ public class Player_Stats : MonoBehaviour
 
     void Die()
     {
+        if (isDead) return; // Prevent multiple calls
+        isDead = true;
+
         Debug.Log("Player died!");
+
+        // Freeze player movement
+        if (movementScript != null)
+        {
+            movementScript.enabled = false;
+        }
+
+        // Stop player's rigidbody
+        Rigidbody2D playerRb = GetComponent<Rigidbody2D>();
+        if (playerRb != null)
+        {
+            playerRb.linearVelocity = Vector2.zero;
+            playerRb.angularVelocity = 0f;
+            playerRb.bodyType = RigidbodyType2D.Static;
+        }
+
+        // Hide player sprite
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.enabled = false;
+        }
+
+        // Freeze all enemies
+        FreezeAllEnemies();
         
         // Show Game Over UI
         if (gameOverUI != null)
         {
             gameOverUI.SetActive(true);
+        }
+        
+        // Don't freeze time - it prevents buttons from working
+        // Time.timeScale = 0f;
+    }
+
+    void FreezeAllEnemies()
+    {
+        // Find and freeze all enemy movement scripts
+        MonoBehaviour[] allScripts = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
+
+        foreach (MonoBehaviour script in allScripts)
+        {
+            // Freeze common enemy movement scripts
+            if (script is Corn_movement ||
+                script is FlyingBat_movement ||
+                script is Miniboss_Movement ||
+                script is FlyerBoss ||
+                script.GetType().Name.Contains("movement") ||
+                script.GetType().Name.Contains("Movement") ||
+                script.GetType().Name.Contains("Behavior"))
+            {
+                script.enabled = false;
+            }
+        }
+
+        // Also freeze all Rigidbody2D components on enemies
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            Rigidbody2D enemyRb = enemy.GetComponent<Rigidbody2D>();
+            if (enemyRb != null)
+            {
+                enemyRb.linearVelocity = Vector2.zero;
+                enemyRb.angularVelocity = 0f;
+                enemyRb.bodyType = RigidbodyType2D.Static;
+            }
         }
     }
 
