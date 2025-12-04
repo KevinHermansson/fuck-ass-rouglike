@@ -6,11 +6,12 @@ public class BossSpawner : MonoBehaviour
     public GameObject bouncerBossPrefab;
     public GameObject flyerBossPrefab;
     public TextMeshProUGUI bossHPText; // Drag the BossHP text here
-    public float spawnInterval = 5f;
+    public float spawnInterval = 4f;
     public float flyerSpawnInterval = 2f; // Shorter interval for flyer bosses
     private float lastSpawnTime = 0f;
     private Camera mainCamera;
     private bool spawnBouncerNext = true;
+    private bool playerInArena = false; // Track if player is in the arena
 
     void Start()
     {
@@ -20,15 +21,26 @@ public class BossSpawner : MonoBehaviour
 
     void Update()
     {
+        // Don't spawn if player hasn't entered the arena yet
+        if (!playerInArena)
+        {
+            Debug.Log("BossSpawner: Player not in arena, not spawning");
+            return;
+        }
+        
+        Debug.Log("BossSpawner: Player in arena, checking spawn conditions");
+        
         // Get current boss HP from the canvas text
         int bossHP = GetBossHP();
         
         // Stop spawning if boss HP is 0 or less
         if (bossHP <= 0)
         {
-            
+            Debug.Log("BossSpawner: Boss HP is 0, stopping spawns");
             return;
         }
+        
+        Debug.Log($"BossSpawner: Boss HP = {bossHP}, checking spawn timer");
         
         float currentInterval = spawnBouncerNext ? spawnInterval : flyerSpawnInterval;
         
@@ -44,9 +56,12 @@ public class BossSpawner : MonoBehaviour
             currentInterval = currentInterval * 0.4f; // 40% faster for both
         }
         
+        Debug.Log($"BossSpawner: Time check - Current: {Time.time}, Last: {lastSpawnTime}, Interval: {currentInterval}, Ready: {Time.time > lastSpawnTime + currentInterval}");
+        
         if (Time.time > lastSpawnTime + currentInterval)
         {
             lastSpawnTime = Time.time;
+            Debug.Log("BossSpawner: TIME TO SPAWN! Calling SpawnBoss()");
             SpawnBoss();
         }
     }
@@ -81,7 +96,7 @@ public class BossSpawner : MonoBehaviour
         {
             Debug.Log("Spawning Bouncer Boss");
             prefabToSpawn = bouncerBossPrefab;
-            yPos = 3f;
+            yPos = 96f;
         }
         else
         {
@@ -94,17 +109,17 @@ public class BossSpawner : MonoBehaviour
                 GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
                 if (playerObj != null)
                 {
-                    yPos = Mathf.Max(playerObj.transform.position.y, -3f);
+                    yPos = Mathf.Max(playerObj.transform.position.y, 91f);
                     Debug.Log("Flyer boss spawning at player Y level: " + yPos);
                 }
                 else
                 {
-                    yPos = -2f;
+                    yPos = 91f;
                 }
             }
             else
             {
-                yPos = -2f;
+                yPos = 91f;
             }
         }
 
@@ -170,6 +185,25 @@ public class BossSpawner : MonoBehaviour
             }
             
             Debug.Log("Successfully instantiated new boss: " + newBoss.name + " with speed multiplier: " + speedMultiplier);
+        }
+    }
+    
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInArena = true;
+            lastSpawnTime = Time.time; // Reset spawn timer when player enters
+            Debug.Log("Player entered boss arena - spawning begins!");
+        }
+    }
+    
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            // Don't stop spawning when player leaves - bosses continue spawning
+            Debug.Log("Player left boss arena - but spawning continues");
         }
     }
 }

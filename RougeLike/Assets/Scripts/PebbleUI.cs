@@ -12,7 +12,9 @@ public class PebbleUI : MonoBehaviour
 
     void Awake()
     {
+        // Just set the instance, don't destroy - let PebbleManager handle persistence
         Instance = this;
+        Debug.Log($"PebbleUI Awake: Set Instance to {gameObject.name}");
     }
 
     void Start()

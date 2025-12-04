@@ -25,11 +25,25 @@ public class HubSceneManager : MonoBehaviour
             healthBar.SetActive(true);
         }
 
-        // Find and show Pebble Manager
-        GameObject pebbleManager = GameObject.Find("PebbleManager");
-        if (pebbleManager != null)
+        // Check for PebbleManager
+        if (PebbleManager.Instance != null)
         {
-            pebbleManager.SetActive(true);
+            PebbleManager.Instance.gameObject.SetActive(true);
+            Debug.Log("Hub: PebbleManager Instance found and activated");
+        }
+        else
+        {
+            // Try to find in scene
+            GameObject pebbleManager = GameObject.Find("PebbleManager");
+            if (pebbleManager != null)
+            {
+                pebbleManager.SetActive(true);
+                Debug.Log("Hub: Found PebbleManager in scene and activated");
+            }
+            else
+            {
+                Debug.LogWarning("Hub: No PebbleManager found! It should exist in the first scene that loads, or be in this scene for testing.");
+            }
         }
 
         Debug.Log("Hub scene initialized - Game Over hidden, Health Bar and Pebble Manager visible");
