@@ -4,6 +4,13 @@ public class HubSceneManager : MonoBehaviour
 {
     void Start()
     {
+        // Set camera background to brown
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null)
+        {
+            mainCamera.backgroundColor = new Color(0.6f, 0.4f, 0.2f); // Brown color
+        }
+
         // Find and hide Game Over UI
         GameObject gameOverUI = GameObject.Find("GameOverUI");
         if (gameOverUI != null)

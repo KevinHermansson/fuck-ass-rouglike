@@ -82,8 +82,22 @@ public class Player_Stats : MonoBehaviour
             spriteRenderer.enabled = true;
         }
 
-        // Reset health to max when scene loads
+        // Reset death state and health when scene loads
+        isDead = false;
         health = MaxHealth;
+        
+        // Re-enable movement script
+        if (movementScript != null)
+        {
+            movementScript.enabled = true;
+        }
+        
+        // Reset rigidbody to dynamic
+        Rigidbody2D playerRb = GetComponent<Rigidbody2D>();
+        if (playerRb != null)
+        {
+            playerRb.bodyType = RigidbodyType2D.Dynamic;
+        }
 
         if (healthBar == null)
         {
@@ -193,8 +207,8 @@ public class Player_Stats : MonoBehaviour
             gameOverUI.SetActive(true);
         }
         
-        // Stop the game
-        Time.timeScale = 0f;
+        // Don't freeze time - it prevents buttons from working
+        // Time.timeScale = 0f;
     }
 
     void FreezeAllEnemies()

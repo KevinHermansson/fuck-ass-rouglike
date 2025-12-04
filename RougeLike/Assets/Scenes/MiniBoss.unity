@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &468634356 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1147198312395218053, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
+  m_PrefabInstance: {fileID: 1666282118}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &707545929
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -426,14 +431,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3504340527834006958, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+    - target: {fileID: 7498832905746409657, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
+      propertyPath: gameOverUI
       value: 
-      objectReference: {fileID: 2120705462}
-    - target: {fileID: 3504340527834006958, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: RestartGame
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 468634356}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -633,17 +634,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2120705462 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7498832905746409657, guid: 44916c754e4eb574699885e41a6f08e8, type: 3}
-  m_PrefabInstance: {fileID: 1666282118}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32f62151cd17f424ea3051f0738162e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameManager
 --- !u!1001 &4611561372422998140
 PrefabInstance:
   m_ObjectHideFlags: 0

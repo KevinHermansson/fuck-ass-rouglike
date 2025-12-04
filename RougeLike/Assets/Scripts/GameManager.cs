@@ -7,11 +7,60 @@ public class GameManager : MonoBehaviour
 {
     public GameObject gameOverUI;
     private bool ePressed = false;
+    private static GameManager instance;
+    
+    void Awake()
+    {
+        // Singleton pattern - keep only one GameManager across scenes
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+            Debug.Log("GameManager created and persistent");
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    void Start()
+    {
+        // Find and setup reset button automatically
+        SetupResetButton();
+    }
+    
+    void OnLevelWasLoaded(int level)
+    {
+        // Re-setup button when scene changes
+        SetupResetButton();
+    }
+    
+    void SetupResetButton()
+    {
+        // Try to find the GameOverUI if not assigned
+        if (gameOverUI == null)
+        {
+            gameOverUI = GameObject.Find("GameOverUI");
+        }
+        
+        // Find and setup the reset button
+        Button resetButton = GameObject.Find("ResetButton")?.GetComponent<Button>();
+        if (resetButton != null)
+        {
+            // Clear existing listeners and add new one
+            resetButton.onClick.RemoveAllListeners();
+            resetButton.onClick.AddListener(RestartGame);
+            Debug.Log("Reset button configured!");
+        }
+    }
     
     void Update()
     {
-        // Check if Game Over UI is visible and E is pressed (works even when time is frozen)
-        if (gameOverUI != null && gameOverUI.activeInHierarchy)
+        // Check if Game Over UI is visible and E is pressed
+        GameObject currentGameOverUI = gameOverUI ?? GameObject.Find("GameOverUI");
+        
+        if (currentGameOverUI != null && currentGameOverUI.activeInHierarchy)
         {
             if (Input.GetKeyDown(KeyCode.E) && !ePressed)
             {
