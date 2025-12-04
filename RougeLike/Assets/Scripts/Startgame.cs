@@ -67,6 +67,12 @@ public class Startgame : MonoBehaviour
 
     public void BossRoom()
     {
+        // Find the player and set spawn position
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            player.transform.position = new Vector3(130, 70, 0);
+        }
         SceneManager.LoadScene("BossScene");
     }
 
