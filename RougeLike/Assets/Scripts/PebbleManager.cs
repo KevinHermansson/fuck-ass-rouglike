@@ -18,9 +18,15 @@ public class PebbleManager : MonoBehaviour
             
             // Load saved pebbles immediately
             pebbles = savedPebbles;
+            
+            // Ensure the GameObject is active
+            gameObject.SetActive(true);
+            
+            Debug.Log($"PebbleManager: Instance created, pebbles: {pebbles}, GameObject active: {gameObject.activeSelf}");
         }
         else
         {
+            Debug.LogWarning($"PebbleManager: Duplicate found, destroying {gameObject.name}. Keeping existing instance.");
             Destroy(gameObject);
         }
     }
@@ -30,8 +36,40 @@ public class PebbleManager : MonoBehaviour
         // Ensure pebbles are synced
         pebbles = savedPebbles;
         
+        // Ensure GameObject is active
+        gameObject.SetActive(true);
+        
+        // Activate all children (PebbleUI, PebbleIMG)
+        foreach (Transform child in transform)
+        {
+            child.gameObject.SetActive(true);
+            
+            // Check if child has Canvas or CanvasRenderer
+            var canvas = child.GetComponent<Canvas>();
+            var canvasRenderer = child.GetComponent<CanvasRenderer>();
+            var rectTransform = child.GetComponent<RectTransform>();
+            
+            Debug.Log($"PebbleManager: Child {child.name} - Active: {child.gameObject.activeSelf}, " +
+                     $"Canvas: {canvas != null}, CanvasRenderer: {canvasRenderer != null}, " +
+                     $"RectTransform: {rectTransform != null}");
+                     
+            if (rectTransform != null)
+            {
+                Debug.Log($"  -> Position: {rectTransform.position}, Scale: {rectTransform.localScale}");
+            }
+        }
+        
         // Update UI with current pebble count
         UpdateUI();
+        
+        // Check Canvas component on PebbleManager itself
+        var myCanvas = GetComponent<Canvas>();
+        if (myCanvas != null)
+        {
+            Debug.Log($"PebbleManager has Canvas - enabled: {myCanvas.enabled}, renderMode: {myCanvas.renderMode}");
+        }
+        
+        Debug.Log($"PebbleManager: Start complete, active: {gameObject.activeSelf}, children count: {transform.childCount}");
     }
     
     void UpdateUI()
