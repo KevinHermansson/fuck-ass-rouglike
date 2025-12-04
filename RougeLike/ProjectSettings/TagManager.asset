@@ -15,6 +15,7 @@ TagManager:
   - AttackSpeed
   - Speed
   - JumpHeight
+  - Door
   layers:
   - Default
   - TransparentFX
