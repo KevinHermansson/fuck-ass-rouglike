@@ -1,41 +1,68 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Linq;
 using TMPro;
 
 public class Enemy_Health : MonoBehaviour
 {
     public float health = 20;
     public float maxHealth = 20;
-    public int pebblesToDrop = 1; // Amount of pebbles this enemy should drop
-    public GameObject enemyPebblePrefab; // Assign the pebble prefab this enemy should drop
-    public TextMeshProUGUI healthText; // Assign the TextMeshPro text in Inspector
-    public float textOffsetX = 0f; // How far left/right from center (negative = left)
-    public float textOffsetY = 0f; // How far above the enemy the text appears
+    public int pebblesToDrop = 1;
+    public GameObject enemyPebblePrefab;
+    public TextMeshProUGUI healthText;
+    public float textOffsetX = 0f;
+    public float textOffsetY = 0f;
     public float flashDuration = 0.1f;
-    public Color flashColor = new Color(1f, 0f, 0f, 0.5f); // Transparent red
+    public Color flashColor = new Color(1f, 0f, 0f, 0.5f);
 
+    [Header("Special Enemy Settings")]
+    [SerializeField] private bool canBeSpecial = false;
+    [SerializeField] private float specialHealthMultiplier = 1.5f;
+    [SerializeField] private float specialSpawnChance = 0.25f;
+    [SerializeField] private GameObject itemPickupPrefab;
+
+    private bool isSpecial = false;
+    private float baseMaxHealth;
+    private Color originalColor;
     private SpriteRenderer spriteRenderer;
     private Canvas canvas;
 
     void Start()
     {
-        health = maxHealth;
+        baseMaxHealth = maxHealth;
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        // Update health text if assigned
+        if (spriteRenderer != null)
+        {
+            originalColor = spriteRenderer.color;
+        }
+
+        if (canBeSpecial && Random.value <= specialSpawnChance)
+        {
+            isSpecial = true;
+            maxHealth = baseMaxHealth * specialHealthMultiplier;
+            health = maxHealth;
+            
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.color = new Color(1f, 0.8f, 0f, 1f);
+                originalColor = spriteRenderer.color;
+            }
+        }
+        else
+        {
+            health = maxHealth;
+        }
+
         if (healthText != null)
         {
             healthText.text = health.ToString("F0");
-            
-            // Center the text alignment
             healthText.alignment = TextAlignmentOptions.Center;
             
-            // Set up Canvas if it's a World Space Canvas
             canvas = healthText.GetComponentInParent<Canvas>();
             if (canvas != null && canvas.renderMode == RenderMode.WorldSpace)
             {
-                // Set appropriate scale for world space
                 canvas.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
             }
         }
@@ -105,7 +132,6 @@ public class Enemy_Health : MonoBehaviour
     {
         Debug.Log($"{gameObject.name} died!");
 
-        // Drop pebbles based on the public variable
         if (PebbleManager.Instance != null && pebblesToDrop > 0)
         {
             if (enemyPebblePrefab != null)
@@ -118,6 +144,53 @@ public class Enemy_Health : MonoBehaviour
             }
         }
 
+        if (isSpecial)
+        {
+            DropRandomSeed();
+        }
+
         Destroy(gameObject);
+    }
+
+    private void DropRandomSeed()
+    {
+        ItemType2[] allSeeds = UnityEngine.Resources.FindObjectsOfTypeAll<ItemType2>()
+            .Where(item => item.Category == ItemCategory.Seed)
+            .ToArray();
+
+        if (allSeeds.Length == 0)
+        {
+            Debug.LogWarning("No seed items found to drop!");
+            return;
+        }
+
+        ItemType2 randomSeed = allSeeds[Random.Range(0, allSeeds.Length)];
+
+        GameObject pickupObj;
+        if (itemPickupPrefab != null)
+        {
+            pickupObj = Instantiate(itemPickupPrefab, transform.position, Quaternion.identity);
+        }
+        else
+        {
+            pickupObj = new GameObject($"Pickup_{randomSeed.DisplayName}");
+            pickupObj.transform.position = transform.position;
+            
+            if (randomSeed.Icon != null)
+            {
+                SpriteRenderer sr = pickupObj.AddComponent<SpriteRenderer>();
+                sr.sprite = randomSeed.Icon;
+                sr.sortingOrder = 10;
+            }
+        }
+
+        ItemPickup2 pickup = pickupObj.GetComponent<ItemPickup2>();
+        if (pickup == null)
+        {
+            pickup = pickupObj.AddComponent<ItemPickup2>();
+        }
+
+        pickup.SetItem(randomSeed);
+        Debug.Log($"Special enemy dropped seed: {randomSeed.DisplayName}");
     }
 }

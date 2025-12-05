@@ -5,7 +5,7 @@ using System.Collections;
 public class MovementScript : MonoBehaviour
 {
     public float jumpHeight = 8;
-    public float moveSpeed = 5;
+    public float moveSpeed = 3;
     public float knockbackDuration = 0.3f;
     public Rigidbody2D rb;
     public Animator animator;
