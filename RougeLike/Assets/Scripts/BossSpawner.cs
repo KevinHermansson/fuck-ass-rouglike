@@ -6,6 +6,7 @@ public class BossSpawner : MonoBehaviour
     public GameObject bouncerBossPrefab;
     public GameObject flyerBossPrefab;
     public TextMeshProUGUI bossHPText; // Drag the BossHP text here
+    public GameObject bossUIPanel; // Drag the boss UI panel here
     public float spawnInterval = 4f;
     public float flyerSpawnInterval = 2f; // Shorter interval for flyer bosses
     private float lastSpawnTime = 0f;
@@ -16,6 +17,12 @@ public class BossSpawner : MonoBehaviour
     {
         mainCamera = Camera.main;
         lastSpawnTime = Time.time;
+        
+        // Hide boss UI at start
+        if (bossUIPanel != null)
+        {
+            bossUIPanel.SetActive(false);
+        }
     }
 
     void Update()
@@ -24,7 +31,18 @@ public class BossSpawner : MonoBehaviour
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj == null || playerObj.transform.position.x < 422f)
         {
+            // Hide boss UI if player is below x 422
+            if (bossUIPanel != null && bossUIPanel.activeSelf)
+            {
+                bossUIPanel.SetActive(false);
+            }
             return;
+        }
+        
+        // Show boss UI when player reaches x 422
+        if (bossUIPanel != null && !bossUIPanel.activeSelf)
+        {
+            bossUIPanel.SetActive(true);
         }
         
         // Get current boss HP from the canvas text
