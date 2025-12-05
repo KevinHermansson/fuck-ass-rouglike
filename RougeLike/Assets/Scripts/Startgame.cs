@@ -14,18 +14,23 @@ public class Startgame : MonoBehaviour
     {
         if (playerInRange2 && Input.GetKeyDown(KeyCode.E))
         {
-            if (startGamePanel.activeInHierarchy)
+            if (startGamePanel != null)
             {
-                startGamePanel.SetActive(false);
+                if (startGamePanel.activeInHierarchy)
+                {
+                    startGamePanel.SetActive(false);
+                }
+                else
+                    startGamePanel.SetActive(true);
+                Debug.Log("Start Game Triggered");
             }
-            else
-                startGamePanel.SetActive(true);
-            Debug.Log("Start Game Triggered");
         }
         if (playerInRange3 && Input.GetKeyDown(KeyCode.E))
         {
             BossRoom();
         }
+        startGamePanelActive();
+        
     }
 
     public bool playerInRange2;
@@ -56,7 +61,10 @@ public class Startgame : MonoBehaviour
 
 
             playerInRange2 = false;
-            startGamePanel.SetActive(false);
+            if (startGamePanel != null)
+            {
+                startGamePanel.SetActive(false);
+            }
         }
     }
 
@@ -76,5 +84,12 @@ public class Startgame : MonoBehaviour
         SceneManager.LoadScene("BossScene");
     }
 
+public void startGamePanelActive(){
+    if (SceneManager.GetActiveScene().name == "Hub" && startGamePanel == null)
+    {
+        startGamePanel = GameObject.FindWithTag("UI");
+    }
+}
+    
 
 }

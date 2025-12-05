@@ -16,6 +16,7 @@ TagManager:
   - Speed
   - JumpHeight
   - Door
+  - UI
   layers:
   - Default
   - TransparentFX
