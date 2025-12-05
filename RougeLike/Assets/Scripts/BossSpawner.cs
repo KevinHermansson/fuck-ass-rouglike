@@ -11,7 +11,6 @@ public class BossSpawner : MonoBehaviour
     private float lastSpawnTime = 0f;
     private Camera mainCamera;
     private bool spawnBouncerNext = true;
-    private bool playerInArena = false; // Track if player is in the arena
 
     void Start()
     {
@@ -21,14 +20,12 @@ public class BossSpawner : MonoBehaviour
 
     void Update()
     {
-        // Don't spawn if player hasn't entered the arena yet
-        if (!playerInArena)
+        // Check if player is at x position 422 or higher
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj == null || playerObj.transform.position.x < 422f)
         {
-            Debug.Log("BossSpawner: Player not in arena, not spawning");
             return;
         }
-        
-        Debug.Log("BossSpawner: Player in arena, checking spawn conditions");
         
         // Get current boss HP from the canvas text
         int bossHP = GetBossHP();
@@ -185,25 +182,6 @@ public class BossSpawner : MonoBehaviour
             }
             
             Debug.Log("Successfully instantiated new boss: " + newBoss.name + " with speed multiplier: " + speedMultiplier);
-        }
-    }
-    
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerInArena = true;
-            lastSpawnTime = Time.time; // Reset spawn timer when player enters
-            Debug.Log("Player entered boss arena - spawning begins!");
-        }
-    }
-    
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            // Don't stop spawning when player leaves - bosses continue spawning
-            Debug.Log("Player left boss arena - but spawning continues");
         }
     }
 }

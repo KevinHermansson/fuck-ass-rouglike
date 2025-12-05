@@ -3,105 +3,74 @@ using UnityEngine;
 public class FlyerBoss : MonoBehaviour
 {
     public float speed = 3f;
-    public float damage = 20f; // Damage dealt to player on collision
-    public LayerMask playerLayer; // Set this to the Player layer in the Inspector
+    public float damage = 20f;
 
-    private int direction = 1; // 1 for right, -1 for left
-    private Camera mainCamera;
-    private float leftBound;
-    private float rightBound;
+    private int direction = 1;
     private Rigidbody2D rb;
-    private Transform player;
 
     void Start()
     {
-        mainCamera = Camera.main;
         rb = GetComponent<Rigidbody2D>();
-        CalculateCameraBounds();
 
-        // Ensure boss doesn't fall initially
+        // Check Rigidbody2D
+        if (rb == null)
+        {
+            Debug.LogError("FlyerBoss: No Rigidbody2D found! Adding one...");
+            rb = gameObject.AddComponent<Rigidbody2D>();
+        }
+        
+        // Ensure boss doesn't fall
         rb.gravityScale = 0;
+        rb.bodyType = RigidbodyType2D.Dynamic; // Must be Dynamic for triggers to work
+        
+        // Setup Collider as TRIGGER (enemy layer doesn't physically collide with player layer)
+        Collider2D myCollider = GetComponent<Collider2D>();
+        if (myCollider == null)
+        {
+            Debug.LogError("FlyerBoss: No Collider2D found! Adding CircleCollider2D...");
+            myCollider = gameObject.AddComponent<CircleCollider2D>();
+        }
+        
+        // Must be a trigger since enemy/player layers don't physically collide
+        myCollider.isTrigger = true;
+        
+        Debug.Log($"FlyerBoss Setup - Layer: {LayerMask.LayerToName(gameObject.layer)}, Tag: {gameObject.tag}, Trigger: {myCollider.isTrigger}");
         
         // Find player and set direction based on relative position
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
-            player = playerObj.transform;
-            float playerX = player.position.x;
+            float playerX = playerObj.transform.position.x;
             
             // If boss is left of player, move right (1). If boss is right of player, move left (-1).
             direction = transform.position.x < playerX ? 1 : -1;
-        }
-        
-        // Ignore collision with everything except player
-        Collider2D myCollider = GetComponent<Collider2D>();
-        if (myCollider != null)
-        {
-            // Ignore platforms
-            GameObject[] platforms = GameObject.FindGameObjectsWithTag("Ground");
-            foreach (GameObject platform in platforms)
-            {
-                Collider2D platformCollider = platform.GetComponent<Collider2D>();
-                if (platformCollider != null)
-                {
-                    Physics2D.IgnoreCollision(myCollider, platformCollider, true);
-                }
-            }
             
-            // Ignore all enemies
-            GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
-            foreach (GameObject enemy in enemies)
-            {
-                Collider2D enemyCollider = enemy.GetComponent<Collider2D>();
-                if (enemyCollider != null && enemyCollider != myCollider)
-                {
-                    Physics2D.IgnoreCollision(myCollider, enemyCollider, true);
-                }
-            }
-        }
-        
-        // Destroy after 5 seconds
-        Destroy(gameObject, 5f);
-    }
-
-    void FixedUpdate()
-    {
-        Move();
-    }
-
-    void CalculateCameraBounds()
-    {
-        if (mainCamera != null)
-        {
-            float cameraHeight = 2f * mainCamera.orthographicSize;
-            float cameraWidth = cameraHeight * mainCamera.aspect;
-            leftBound = mainCamera.transform.position.x - cameraWidth / 2f + 1f;
-            rightBound = mainCamera.transform.position.x + cameraWidth / 2f - 1f;
+            Collider2D playerCollider = playerObj.GetComponent<Collider2D>();
+            Debug.Log($"Player found - Layer: {LayerMask.LayerToName(playerObj.layer)}, Tag: {playerObj.tag}, Collider: {playerCollider != null}, IsTrigger: {playerCollider?.isTrigger}");
+            
+            // Check if layers can interact
+            int flyerLayer = gameObject.layer;
+            int playerLayer = playerObj.layer;
+            bool canCollide = !Physics2D.GetIgnoreLayerCollision(flyerLayer, playerLayer);
+            Debug.Log($"Layer collision check - Flyer layer {flyerLayer} vs Player layer {playerLayer}: Can collide/trigger = {canCollide}");
         }
     }
 
-    void Move()
+    void Update()
     {
-        
-
         // Apply velocity
         rb.linearVelocity = new Vector2(direction * speed, 0);
     }
 
-    void FlipSprite()
+    void OnTriggerEnter2D(Collider2D other)
     {
-        // Flip the sprite by negating the X scale
-        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log($"FlyerBoss collision with: {collision.gameObject.name}, tag: {collision.gameObject.tag}");
+        Debug.Log($"FlyerBoss TRIGGER with: {other.gameObject.name}, tag: '{other.gameObject.tag}'");
         
-        // Check if we collided with the player
-        if (collision.gameObject.CompareTag("Player"))
+        // Check if we triggered with the player
+        if (other.CompareTag("Player"))
         {
-            Player_Stats playerStats = collision.gameObject.GetComponent<Player_Stats>();
+            Debug.Log("FlyerBoss: Player trigger detected!");
+            Player_Stats playerStats = other.GetComponent<Player_Stats>();
             if (playerStats != null)
             {
                 playerStats.TakeDamage(damage);
@@ -109,33 +78,12 @@ public class FlyerBoss : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Player_Stats component not found on player!");
+                Debug.LogError("FlyerBoss: Player_Stats component not found on player!");
             }
             
-            
-        }
-    }
-    
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        Debug.Log($"FlyerBoss trigger with: {collision.gameObject.name}, tag: {collision.gameObject.tag}");
-        
-        // Check if we collided with the player
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            Player_Stats playerStats = collision.gameObject.GetComponent<Player_Stats>();
-            if (playerStats != null)
-            {
-                playerStats.TakeDamage(damage);
-                Debug.Log($"FlyerBoss hit player for {damage} damage!");
-            }
-            else
-            {
-                Debug.LogWarning("Player_Stats component not found on player!");
-            }
-            
-            // Destroy the flying boss after hitting the player
+            // Destroy the flying boss after hitting player
             Destroy(gameObject);
         }
     }
 }
+            

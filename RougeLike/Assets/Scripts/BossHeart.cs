@@ -157,6 +157,11 @@ public class BossHeart : MonoBehaviour
     void Die()
     {
         Debug.Log("Boss Heart defeated! All hearts depleted!");
+        
+        // Freeze the game
+        Time.timeScale = 0f;
+        Debug.Log("Game frozen! Time.timeScale set to 0");
+        
         Destroy(gameObject);
     }
 }

@@ -16,6 +16,7 @@ public class MovementScript : MonoBehaviour
     public bool fancyGroundCheck;
     public BoxCollider2D feetTrigger; // Assign the feet trigger collider in Inspector
     BoxCollider2D PlayerCollider;
+    private BoxCollider2D enemyDamageTrigger; // Trigger for enemy damage detection
 
     private bool feetTouchingGround = false;
 
@@ -29,6 +30,12 @@ public class MovementScript : MonoBehaviour
         PlayerCollider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
         playerStats = GetComponent<Player_Stats>();
+
+        // Create a trigger collider specifically for enemy damage detection
+        enemyDamageTrigger = gameObject.AddComponent<BoxCollider2D>();
+        enemyDamageTrigger.isTrigger = true;
+        enemyDamageTrigger.size = PlayerCollider.size;
+        enemyDamageTrigger.offset = PlayerCollider.offset;
 
         // Ignore collisions with all enemies
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
