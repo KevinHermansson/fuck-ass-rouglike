@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Linq; // Add this if not present
 using TMPro;
 
 public class MinibossHealth : MonoBehaviour
@@ -13,6 +14,11 @@ public class MinibossHealth : MonoBehaviour
     public GameObject minibossPebblePrefab; // Assign the pebble prefab this miniboss should drop
     public float flashDuration = 0.1f;
     public Color flashColor = new Color(1f, 0f, 0f, 0.5f); // Transparent red
+
+    [Header("Item Drop Settings")]
+    [SerializeField] private GameObject itemPickupPrefab; // Prefab for item pickup
+    [SerializeField] private float itemDropChance = 0.5f; // 50% chance to drop an item
+    [SerializeField] private bool dropWeapon = true; // If true, drops weapon; if false, drops seed
 
     private SpriteRenderer spriteRenderer;
     private bool isFlashing = false;
@@ -158,7 +164,77 @@ public class MinibossHealth : MonoBehaviour
             }
         }
 
+        // Drop item with chance
+        if (Random.value <= itemDropChance)
+        {
+            DropItem();
+        }
+
         // Add death animation, rewards, etc.
         Destroy(gameObject, 1f);
+    }
+
+    private void DropItem()
+    {
+        ItemType2 itemToDrop = null;
+
+        if (dropWeapon)
+        {
+            // Drop a random weapon
+            ItemType2[] allWeapons = UnityEngine.Resources.FindObjectsOfTypeAll<ItemType2>()
+                .Where(item => item.Category == ItemCategory.Weapon)
+                .ToArray();
+
+            if (allWeapons.Length > 0)
+            {
+                itemToDrop = allWeapons[Random.Range(0, allWeapons.Length)];
+            }
+        }
+        else
+        {
+            // Drop a random seed
+            ItemType2[] allSeeds = UnityEngine.Resources.FindObjectsOfTypeAll<ItemType2>()
+                .Where(item => item.Category == ItemCategory.Seed)
+                .ToArray();
+
+            if (allSeeds.Length > 0)
+            {
+                itemToDrop = allSeeds[Random.Range(0, allSeeds.Length)];
+            }
+        }
+
+        if (itemToDrop == null)
+        {
+            Debug.LogWarning("No items found to drop!");
+            return;
+        }
+
+        // Create pickup GameObject
+        GameObject pickupObj;
+        if (itemPickupPrefab != null)
+        {
+            pickupObj = Instantiate(itemPickupPrefab, transform.position, Quaternion.identity);
+        }
+        else
+        {
+            pickupObj = new GameObject($"Pickup_{itemToDrop.DisplayName}");
+            pickupObj.transform.position = transform.position;
+            
+            if (itemToDrop.Icon != null)
+            {
+                SpriteRenderer sr = pickupObj.AddComponent<SpriteRenderer>();
+                sr.sprite = itemToDrop.Icon;
+                sr.sortingOrder = 10;
+            }
+        }
+
+        ItemPickup2 pickup = pickupObj.GetComponent<ItemPickup2>();
+        if (pickup == null)
+        {
+            pickup = pickupObj.AddComponent<ItemPickup2>();
+        }
+
+        pickup.SetItem(itemToDrop);
+        Debug.Log($"Miniboss dropped: {itemToDrop.DisplayName}");
     }
 }

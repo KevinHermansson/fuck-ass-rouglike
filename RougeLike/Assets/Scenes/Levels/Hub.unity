@@ -22089,7 +22089,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponInventory2
   slots:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 5a90e5ec7b568f14c8026b878a6789ac, type: 2}
   - {fileID: 0}
   selectedIndex: -1
 --- !u!1001 &2062853312

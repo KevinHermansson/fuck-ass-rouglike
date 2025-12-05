@@ -3227,9 +3227,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1121223941}
     - target: {fileID: 6364318799883005913, guid: 0469940d47d5b8d43bdef300915facd6, type: 3}
+      propertyPath: itemDropChance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364318799883005913, guid: 0469940d47d5b8d43bdef300915facd6, type: 3}
       propertyPath: healthBarBorder
       value: 
       objectReference: {fileID: 115092426}
+    - target: {fileID: 6364318799883005913, guid: 0469940d47d5b8d43bdef300915facd6, type: 3}
+      propertyPath: itemPickupPrefab
+      value: 
+      objectReference: {fileID: 8756065654329144401, guid: 6a3b3f9f67cadac42913efe6ec6136ad, type: 3}
     - target: {fileID: 6364318799883005913, guid: 0469940d47d5b8d43bdef300915facd6, type: 3}
       propertyPath: Healthbarfordummies
       value: 
