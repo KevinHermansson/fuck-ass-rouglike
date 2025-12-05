@@ -2222,6 +2222,10 @@ PrefabInstance:
       propertyPath: weaponInventoryUI
       value: 
       objectReference: {fileID: 386542571}
+    - target: {fileID: 6695673579181980219, guid: 2f631fedf49f26a40b4dc7f7840481c4, type: 3}
+      propertyPath: 'slots.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 0f2f695d5ddccd94c8b1d8fda26ac5ed, type: 2}
     - target: {fileID: 7435666135047901955, guid: 2f631fedf49f26a40b4dc7f7840481c4, type: 3}
       propertyPath: m_LocalPosition.x
       value: -186.78136
