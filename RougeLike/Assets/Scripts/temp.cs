@@ -31,8 +31,7 @@ public class temp : MonoBehaviour
 
     public void toHub()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        SceneManager.LoadScene("Hub");
-        player.transform.position = new Vector3(0, 0, 0);
+        SceneManager.LoadScene("MainMenu");
+        Destroy(GameObject.Find("Player"));
     }
 }

@@ -44,6 +44,7 @@ public class Player_Stats : MonoBehaviour
     private Color originalColor;
     private static Player_Stats instance;
     private bool isDead = false;
+    private bool firstInstance = false;
 
     void Awake()
     {
@@ -52,6 +53,7 @@ public class Player_Stats : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            firstInstance = true;
         }
         else
         {
@@ -59,7 +61,7 @@ public class Player_Stats : MonoBehaviour
             return;
         }
     }
-    
+
     void OnDestroy()
     {
         // Reset singleton when destroyed
@@ -82,16 +84,19 @@ public class Player_Stats : MonoBehaviour
             spriteRenderer.enabled = true;
         }
 
-        // Reset death state and health when scene loads
-        isDead = false;
-        health = MaxHealth;
-        
+        // Only initialize health/state on the first created instance
+        if (firstInstance)
+        {
+            isDead = false;
+            health = MaxHealth;
+        }
+
         // Re-enable movement script
         if (movementScript != null)
         {
             movementScript.enabled = true;
         }
-        
+
         // Reset rigidbody to dynamic
         Rigidbody2D playerRb = GetComponent<Rigidbody2D>();
         if (playerRb != null)
@@ -200,13 +205,13 @@ public class Player_Stats : MonoBehaviour
 
         // Freeze all enemies
         FreezeAllEnemies();
-        
+
         // Show Game Over UI
         if (gameOverUI != null)
         {
             gameOverUI.SetActive(true);
         }
-        
+
         // Don't freeze time - it prevents buttons from working
         // Time.timeScale = 0f;
     }
