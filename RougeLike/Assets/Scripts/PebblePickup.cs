@@ -90,7 +90,8 @@ public class PebblePickup : MonoBehaviour
                     PebbleManager.Instance.AddPebbles(amount);
 
                 Destroy(gameObject);
-                logic.UpdatePebbleCounter();
+                if (logic != null)
+                    logic.UpdatePebbleCounter();
             }
         }
     }

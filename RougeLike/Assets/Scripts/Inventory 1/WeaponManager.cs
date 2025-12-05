@@ -7,6 +7,9 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] private Transform attackPoint;
     [SerializeField] private LayerMask enemyLayers;
     
+    [Header("Debug")]
+    [SerializeField] private bool showMeleeCone = false;
+    
     private Player_Stats playerStats;
     private float lastDirection = 1f;
     private float nextAttackTime = 0f;
@@ -14,6 +17,7 @@ public class WeaponManager : MonoBehaviour
     private int currentWeaponSlot = -1;
     private SpriteRenderer weaponSpriteRenderer;
     private GameObject weaponVisual;
+    private bool isSwinging = false; // Flag to prevent UpdateWeaponVisual from interfering with swing animation
 
     private void Start()
 {
@@ -127,16 +131,26 @@ public class WeaponManager : MonoBehaviour
     private void UpdateWeaponVisual()
     {
         if (weaponVisual == null || weaponSpriteRenderer == null) return;
+        
+        // Don't update during swing animation
+        if (isSwinging) return;
 
         if (currentWeapon != null && currentWeapon.weaponSprite != null)
         {
             weaponVisual.SetActive(true);
             weaponSpriteRenderer.sprite = currentWeapon.weaponSprite;
             
+            // Apply weapon scale
+            float scale = currentWeapon.weaponScale > 0 ? currentWeapon.weaponScale : 1f;
+            weaponVisual.transform.localScale = new Vector3(scale, scale, 1f);
+            
             // Position weapon in front of player
             Vector2 offset = currentWeapon.weaponOffset;
             offset.x *= lastDirection; // Flip offset based on direction
             weaponVisual.transform.localPosition = new Vector3(offset.x, offset.y, 0f);
+            
+            // Reset rotation
+            weaponVisual.transform.localEulerAngles = Vector3.zero;
             
             // Flip sprite if facing left
             weaponSpriteRenderer.flipX = lastDirection < 0;
@@ -286,34 +300,115 @@ public class WeaponManager : MonoBehaviour
         float cooldown = baseCooldown * currentWeapon.cooldownMultiplier;
         nextAttackTime = Time.time + cooldown;
 
-        Vector3 attackPos = attackPoint != null ? attackPoint.position : transform.position;
-        float range = currentWeapon.meleeRange;
+        // Animate weapon swing
+        StartCoroutine(AnimateWeaponSwing());
+
+        // Spawn melee cone (similar to bullets)
+        SpawnMeleeCone();
+    }
+
+    private void SpawnMeleeCone()
+{
+    // Use attackPoint as the origin of the melee
+    Transform origin = attackPoint != null ? attackPoint : transform;
+
+    GameObject cone = new GameObject("MeleeCone");
+
+    // Parent to the origin so it moves with the player/weapon
+    cone.transform.SetParent(origin);
+    cone.transform.localPosition = Vector3.zero;
+    cone.transform.localRotation = Quaternion.identity;
+
+    // Visual debug cone
+    CreateConeVisual(cone, currentWeapon.meleeRange, currentWeapon.meleeSwingArc);
+
+    // Use the origin position for damage checks
+    StartCoroutine(HandleMeleeCone(cone));
+}
+
+
+    private IEnumerator HandleMeleeCone(GameObject cone)
+    {
         int damage = CalculateDamage();
-
-        // Spawn slash effect
-        if (currentWeapon.slashEffectPrefab != null)
-        {
-            GameObject slash = Instantiate(currentWeapon.slashEffectPrefab, attackPos, Quaternion.identity);
-            
-            // Flip slash based on direction
-            if (lastDirection < 0)
-            {
-                Vector3 scale = slash.transform.localScale;
-                scale.x *= -1;
-                slash.transform.localScale = scale;
-            }
-            
-            // Destroy slash effect after animation
-            Destroy(slash, 0.5f);
-        }
-
-        // Check for enemies in range
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPos, range, enemyLayers);
+        float range = currentWeapon.meleeRange;
+        float halfArc = currentWeapon.meleeSwingArc * 0.5f;
+        Vector2 forward = new Vector2(lastDirection, 0f);
+        Vector3 conePos = cone.transform.position;
         
-        for (int i = 0; i < hitEnemies.Length; i++)
+        // Check for enemies in cone area
+        Collider2D[] hits = Physics2D.OverlapCircleAll(conePos, range, enemyLayers);
+        
+        foreach (Collider2D hit in hits)
         {
-            ApplyDamage(hitEnemies[i].gameObject, damage);
+            Vector2 toTarget = ((Vector2)hit.transform.position - (Vector2)conePos).normalized;
+            
+            // Check if enemy is in front of player
+            if (Vector2.Dot(forward, toTarget) > 0f)
+            {
+                // Check if enemy is within the swing arc
+                float angle = Vector2.SignedAngle(forward, toTarget);
+                if (Mathf.Abs(angle) <= halfArc)
+                {
+                    ApplyDamage(hit.gameObject, damage);
+                }
+            }
         }
+        
+        // Clean up after a short delay (longer if debug is enabled)
+        float cleanupDelay = showMeleeCone ? 1f : 0.1f;
+        yield return new WaitForSeconds(cleanupDelay);
+        if (cone != null)
+            Destroy(cone);
+    }
+
+    private IEnumerator AnimateWeaponSwing()
+    {
+        if (weaponVisual == null) yield break;
+
+        isSwinging = true;
+        
+        float swingDuration = 0.3f;
+        float elapsed = 0f;
+        
+        // Store initial position and rotation
+        Vector2 offset = currentWeapon != null ? currentWeapon.weaponOffset : new Vector2(0.5f, 0f);
+        Vector3 initialPos = new Vector3(offset.x * lastDirection, offset.y, 0f);
+        
+        // Start from behind (opposite side) and swing forward
+        // When facing right (lastDirection = 1): start at -45, swing to 0
+        // When facing left (lastDirection = -1): start at +45, swing to 0
+        float startRotation = -45f * lastDirection; // Start from behind
+        float endRotation = 0f; // End at forward
+        
+        while (elapsed < swingDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / swingDuration;
+            
+            // Ease out curve for smooth swing
+            float easedT = 1f - Mathf.Pow(1f - t, 3f);
+            
+            // Rotate weapon from behind to forward
+            float currentRotation = Mathf.Lerp(startRotation, endRotation, easedT);
+            weaponVisual.transform.localEulerAngles = new Vector3(0f, 0f, currentRotation);
+            
+            // Slight forward movement during swing
+            float forwardPush = Mathf.Sin(easedT * Mathf.PI) * 0.2f; // Push forward then back
+            Vector3 swingPos = new Vector3(
+                (offset.x + forwardPush) * lastDirection,
+                offset.y,
+                0f
+            );
+            weaponVisual.transform.localPosition = swingPos;
+            
+            yield return null;
+        }
+        
+        // Reset to initial state
+        weaponVisual.transform.localEulerAngles = Vector3.zero;
+        weaponVisual.transform.localPosition = initialPos;
+        
+        isSwinging = false;
     }
 
     private void PerformDefaultMelee()
@@ -321,15 +416,68 @@ public class WeaponManager : MonoBehaviour
         float baseCooldown = 1f / (playerStats != null ? playerStats.AttackSpeed : 1f);
         nextAttackTime = Time.time + baseCooldown;
 
-        Vector3 attackPos = attackPoint != null ? attackPoint.position : transform.position;
-        int damage = playerStats != null ? playerStats.AttackDamage : 20;
+        // Animate weapon swing
+        StartCoroutine(AnimateWeaponSwing());
 
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPos, 0.5f, enemyLayers);
-        
-        for (int i = 0; i < hitEnemies.Length; i++)
+        // Spawn default melee cone (reuse same logic with default values)
+        SpawnDefaultMeleeCone();
+    }
+
+    private void SpawnDefaultMeleeCone()
+    {
+        // Calculate spawn position (same as weapon melee)
+        Vector3 spawnPos;
+        if (weaponVisual != null && weaponSpriteRenderer != null && weaponSpriteRenderer.sprite != null)
         {
-            ApplyDamage(hitEnemies[i].gameObject, damage);
+            float weaponWidth = weaponSpriteRenderer.bounds.size.x;
+            spawnPos = weaponVisual.transform.position + Vector3.right * (weaponWidth * 0.5f * lastDirection);
         }
+        else
+        {
+            spawnPos = attackPoint != null ? attackPoint.position : transform.position;
+        }
+        
+        GameObject cone = new GameObject("DefaultMeleeCone");
+        // Position at weapon (cone will extend from here)
+        cone.transform.position = spawnPos;
+        
+        // Create visual debug representation (always created, visibility controlled by flag)
+        CreateConeVisual(cone, 0.5f, 90f); // Default range and arc
+        
+        StartCoroutine(HandleDefaultMeleeCone(cone));
+    }
+
+    private IEnumerator HandleDefaultMeleeCone(GameObject cone)
+    {
+        int damage = playerStats != null ? playerStats.AttackDamage : 20;
+        float range = 0.5f;
+        float halfArc = 45f; // 90 degree arc
+        Vector2 forward = new Vector2(lastDirection, 0f);
+        Vector3 conePos = cone.transform.position;
+        
+        // Check for enemies in cone area
+        Collider2D[] hits = Physics2D.OverlapCircleAll(conePos, range, enemyLayers);
+        
+        foreach (Collider2D hit in hits)
+        {
+            Vector2 toTarget = ((Vector2)hit.transform.position - (Vector2)conePos).normalized;
+            
+            // Check if enemy is in front and within arc
+            if (Vector2.Dot(forward, toTarget) > 0f)
+            {
+                float angle = Vector2.SignedAngle(forward, toTarget);
+                if (Mathf.Abs(angle) <= halfArc)
+                {
+                    ApplyDamage(hit.gameObject, damage);
+                }
+            }
+        }
+        
+        // Clean up after a short delay (longer if debug is enabled)
+        float cleanupDelay = showMeleeCone ? 1f : 0.1f;
+        yield return new WaitForSeconds(cleanupDelay);
+        if (cone != null)
+            Destroy(cone);
     }
 
     private int CalculateDamage()
@@ -378,13 +526,123 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
+    private void CreateConeVisual(GameObject cone, float range, float arc)
+    {
+        // Create a sprite renderer to visualize the cone
+        SpriteRenderer sr = cone.AddComponent<SpriteRenderer>();
+        
+        // Create a cone-shaped texture (wider at far end, narrow at start)
+        int width = 128;
+        int height = (int)(range * 64f); // Height based on range
+        if (height < 32) height = 32; // Minimum height
+        
+        Texture2D texture = new Texture2D(width, height);
+        Color[] pixels = new Color[width * height];
+        
+        float halfArc = arc * 0.5f;
+        
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                float normalizedY = (float)y / height; // 0 at start (weapon), 1 at end (range)
+                float normalizedX = (float)x / width; // 0 to 1 across width
+                
+                // Calculate cone width at this distance
+                // Cone starts narrow (at weapon) and gets wider as it extends
+                float coneWidthAtDistance = normalizedY; // 0 at start, 1 at end
+                float halfWidth = coneWidthAtDistance * 0.5f;
+                
+                // Distance from center line
+                float distFromCenter = Mathf.Abs(normalizedX - 0.5f);
+                
+                // Check if within cone bounds
+                float alpha = 0f;
+                if (distFromCenter <= halfWidth)
+                {
+                    // Inside cone - calculate alpha based on distance from edges
+                    float edgeDist = halfWidth - distFromCenter;
+                    alpha = Mathf.Clamp01(edgeDist / (halfWidth * 0.3f)) * 0.4f; // Semi-transparent
+                }
+                
+                pixels[y * width + x] = new Color(1f, 0f, 0f, alpha);
+            }
+        }
+        
+        texture.SetPixels(pixels);
+        texture.Apply();
+        
+        // Create sprite from texture
+        // Pivot at bottom center (where weapon is) - (0.5, 0) means bottom center
+        Sprite sprite = Sprite.Create(
+            texture,
+            new Rect(0, 0, width, height),
+            new Vector2(0.5f, 0f), // Pivot at bottom center (weapon position)
+            64f // Pixels per unit
+        );
+        
+        sr.sprite = sprite;
+        sr.color = Color.red;
+        sr.sortingOrder = 10;
+        
+        // Position cone at weapon location (pivot is at bottom, so it extends forward)
+        // Scale height to match actual range
+        float scaleY = range / (height / 64f);
+        float scaleX = (arc / 90f) * 2f; // Scale width based on arc
+        cone.transform.localScale = new Vector3(scaleX, scaleY, 1f);
+        
+        // Rotate to face the correct direction
+        // Rotate so the cone extends along +X / -X from the pivot
+    float rotationAngle = lastDirection > 0 ? -90f : 90f;
+    cone.transform.localRotation = Quaternion.Euler(0f, 0f, rotationAngle);
+
+        // Make visible/invisible based on debug flag
+        sr.enabled = showMeleeCone;
+    }
+
     private void OnDrawGizmosSelected()
     {
-        if (currentWeapon != null && currentWeapon.weaponType == WeaponType.Melee)
+        if (showMeleeCone && currentWeapon != null && currentWeapon.weaponType == WeaponType.Melee)
         {
             Gizmos.color = Color.red;
             Vector3 pos = attackPoint != null ? attackPoint.position : transform.position;
-            Gizmos.DrawWireSphere(pos, currentWeapon.meleeRange);
+            
+            // Draw cone shape
+            float range = currentWeapon.meleeRange;
+            float halfArc = currentWeapon.meleeSwingArc * 0.5f;
+            Vector2 forward = new Vector2(lastDirection, 0f);
+            
+            // Draw arc lines
+            int segments = 20;
+            Vector3 lastPoint = pos;
+            for (int i = 0; i <= segments; i++)
+            {
+                float angle = -halfArc + (halfArc * 2f * i / segments);
+                float angleRad = angle * Mathf.Deg2Rad;
+                Vector2 direction = new Vector2(
+                    Mathf.Cos(angleRad) * lastDirection,
+                    Mathf.Sin(angleRad)
+                );
+                Vector3 point = (Vector2)pos + direction * range;
+                
+                if (i > 0)
+                {
+                    Gizmos.DrawLine(lastPoint, point);
+                }
+                lastPoint = point;
+            }
+            
+            // Draw lines from center to arc ends
+            Vector2 leftDir = new Vector2(
+                Mathf.Cos(-halfArc * Mathf.Deg2Rad) * lastDirection,
+                Mathf.Sin(-halfArc * Mathf.Deg2Rad)
+            );
+            Vector2 rightDir = new Vector2(
+                Mathf.Cos(halfArc * Mathf.Deg2Rad) * lastDirection,
+                Mathf.Sin(halfArc * Mathf.Deg2Rad)
+            );
+            Gizmos.DrawLine(pos, (Vector2)pos + leftDir * range);
+            Gizmos.DrawLine(pos, (Vector2)pos + rightDir * range);
         }
     }
 }

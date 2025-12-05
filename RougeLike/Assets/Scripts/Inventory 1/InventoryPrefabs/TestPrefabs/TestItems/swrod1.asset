@@ -12,15 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 195132a7fb9ec514087e49d85d71e60a, type: 3}
   m_Name: swrod1
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
-  weaponType: 0
+  weaponType: 1
   bulletPrefab: {fileID: 0}
   bulletCount: 1
   bulletSpread: 0
   bulletSpeed: 10
   bulletLifetime: 5
   fireRate: 1
-  meleeRange: 0.5
+  meleeRange: 5
   meleeDamageMultiplier: 1
-  meleeSwingArc: 90
-  baseDamage: 20
+  meleeSwingArc: 20
+  baseDamage: 1
   cooldownMultiplier: 1
+  weaponSprite: {fileID: 21300002, guid: 27df11ebd9f54314a9f96ea8a85a4e0f, type: 3}
+  weaponOffset: {x: 2, y: 0}
+  weaponScale: 0.4
+  slashEffectPrefab: {fileID: 0}

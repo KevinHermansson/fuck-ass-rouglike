@@ -28,6 +28,7 @@ public class WeaponData : ScriptableObject
     [Header("Visuals")]
     public Sprite weaponSprite; // Sprite to show when equipped
     public Vector2 weaponOffset = new Vector2(0.5f, 0f); // Offset from player
+    public float weaponScale = 1f; // Scale multiplier for weapon sprite
     public GameObject slashEffectPrefab; // For melee weapons (white slash effect)
 }
 
