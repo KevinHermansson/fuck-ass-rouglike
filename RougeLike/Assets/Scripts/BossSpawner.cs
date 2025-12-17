@@ -23,6 +23,12 @@ public class BossSpawner : MonoBehaviour
         {
             bossUIPanel.SetActive(false);
         }
+        
+        // Hide boss HP text at start
+        if (bossHPText != null)
+        {
+            bossHPText.gameObject.SetActive(false);
+        }
     }
 
     void Update()
@@ -36,6 +42,12 @@ public class BossSpawner : MonoBehaviour
             {
                 bossUIPanel.SetActive(false);
             }
+            
+            // Hide boss HP text if player is below x 422
+            if (bossHPText != null && bossHPText.gameObject.activeSelf)
+            {
+                bossHPText.gameObject.SetActive(false);
+            }
             return;
         }
         
@@ -43,6 +55,12 @@ public class BossSpawner : MonoBehaviour
         if (bossUIPanel != null && !bossUIPanel.activeSelf)
         {
             bossUIPanel.SetActive(true);
+        }
+        
+        // Show boss HP text when player reaches x 422
+        if (bossHPText != null && !bossHPText.gameObject.activeSelf)
+        {
+            bossHPText.gameObject.SetActive(true);
         }
         
         // Get current boss HP from the canvas text
