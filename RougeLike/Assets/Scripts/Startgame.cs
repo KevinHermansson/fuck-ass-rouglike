@@ -10,6 +10,13 @@ public class Startgame : MonoBehaviour
 {
     public GameObject startGamePanel;
     public GameObject Miniboss;
+
+    void Start()
+    {
+        // Find the panel on scene load if not assigned
+
+    }
+
     void Update()
     {
         if (playerInRange2 && Input.GetKeyDown(KeyCode.E))
@@ -18,7 +25,7 @@ public class Startgame : MonoBehaviour
             {
                 if (startGamePanel.activeInHierarchy)
                 {
-                    startGamePanel.SetActive(false);
+                    StartGame();
                 }
                 else
                     startGamePanel.SetActive(true);
@@ -29,8 +36,22 @@ public class Startgame : MonoBehaviour
         {
             BossRoom();
         }
-        startGamePanelActive();
-        
+
+        if (startGamePanel == null && SceneManager.GetActiveScene().name == "Hub")
+        {
+            startGamePanel = GameObject.FindWithTag("StartMenu");
+            startGamePanel.SetActive(false);
+            if (startGamePanel != null)
+            {
+                Debug.Log("StartGamePanel found: " + startGamePanel.name);
+
+            }
+            else
+            {
+                Debug.LogWarning("StartGamePanel not found!");
+            }
+        }
+
     }
 
     public bool playerInRange2;
@@ -84,12 +105,6 @@ public class Startgame : MonoBehaviour
         SceneManager.LoadScene("BossScene");
     }
 
-public void startGamePanelActive(){
-    if (SceneManager.GetActiveScene().name == "Hub" && startGamePanel == null)
-    {
-        startGamePanel = GameObject.FindWithTag("UI");
-    }
-}
-    
+
 
 }

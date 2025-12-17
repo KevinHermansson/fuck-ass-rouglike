@@ -17,6 +17,12 @@ TagManager:
   - JumpHeight
   - Door
   - UI
+  - StartMenu
+  - DiaPanel
+  - DiaText
+  - ContButton
+  - UpgButton
+  - UpgMenu
   layers:
   - Default
   - TransparentFX

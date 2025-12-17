@@ -10,14 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc51d87417f740f4dbc969b7b28461bf, type: 3}
-  m_Name: testitem
+  m_Name: Seed_Pick_Up1
   m_EditorClassIdentifier: Assembly-CSharp::ItemType2
-  Id: trt
-  DisplayName: trt
-  Icon: {fileID: 21300006, guid: 8af458c9a36be6d46a70eb4946a555a6, type: 3}
+  Id: Seed_Pick_Up1
+  DisplayName: seed1
+  Icon: {fileID: 21300014, guid: 8af458c9a36be6d46a70eb4946a555a6, type: 3}
   Category: 0
-  Description: 'tig
-
-'
+  Description: iuehfiuwehfuwehfuhwefiuhweiufheufh
   Effect2: {fileID: 11400000, guid: b5d1686ce2af307498cc0cbe164590d8, type: 2}
   weaponData: {fileID: 0}

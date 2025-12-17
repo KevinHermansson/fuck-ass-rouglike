@@ -19,12 +19,12 @@ MonoBehaviour:
   bulletSpeed: 10
   bulletLifetime: 5
   fireRate: 1
-  meleeRange: 5
+  meleeRange: 2.2
   meleeDamageMultiplier: 1
   meleeSwingArc: 20
   baseDamage: 1
   cooldownMultiplier: 1
-  weaponSprite: {fileID: 21300002, guid: 27df11ebd9f54314a9f96ea8a85a4e0f, type: 3}
-  weaponOffset: {x: 2, y: 0}
-  weaponScale: 0.4
+  weaponSprite: {fileID: -5430999517422149680, guid: 0caff2d637c07d14cbe1563f2ab90ad1, type: 3}
+  weaponOffset: {x: 0.8, y: 0}
+  weaponScale: 1.8
   slashEffectPrefab: {fileID: 0}

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Linq;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Enemy_Health : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class Enemy_Health : MonoBehaviour
     public float textOffsetY = 0f;
     public float flashDuration = 0.1f;
     public Color flashColor = new Color(1f, 0f, 0f, 0.5f);
+
+
 
     [Header("Special Enemy Settings")]
     [SerializeField] private bool canBeSpecial = false;
@@ -43,7 +46,7 @@ public class Enemy_Health : MonoBehaviour
             isSpecial = true;
             maxHealth = baseMaxHealth * specialHealthMultiplier;
             health = maxHealth;
-            
+
             if (spriteRenderer != null)
             {
                 spriteRenderer.color = new Color(1f, 0.8f, 0f, 1f);
@@ -59,7 +62,7 @@ public class Enemy_Health : MonoBehaviour
         {
             healthText.text = health.ToString("F0");
             healthText.alignment = TextAlignmentOptions.Center;
-            
+
             canvas = healthText.GetComponentInParent<Canvas>();
             if (canvas != null && canvas.renderMode == RenderMode.WorldSpace)
             {
@@ -83,23 +86,24 @@ public class Enemy_Health : MonoBehaviour
         if (healthText != null)
         {
             healthText.text = health.ToString("F0"); // Display health as whole number
-            
+
             // Position canvas directly above enemy every frame (world position)
             if (canvas != null)
             {
                 // Set world position to be above enemy with X and Y offsets
                 canvas.transform.position = new Vector3(transform.position.x + textOffsetX, transform.position.y + textOffsetY, transform.position.z);
-                
+
                 // Reset rotation to no rotation
                 canvas.transform.rotation = Quaternion.identity;
             }
-            
+
             // Make text face the camera
             if (Camera.main != null)
             {
                 healthText.transform.rotation = Camera.main.transform.rotation;
             }
         }
+
     }
 
     public void TakeDamage(float damageAmount)
@@ -121,7 +125,7 @@ public class Enemy_Health : MonoBehaviour
     IEnumerator DamageFlash()
     {
         if (spriteRenderer == null) yield break;
-        
+
         Color originalColor = spriteRenderer.color;
         spriteRenderer.color = flashColor;
         yield return new WaitForSeconds(flashDuration);
@@ -175,7 +179,7 @@ public class Enemy_Health : MonoBehaviour
         {
             pickupObj = new GameObject($"Pickup_{randomSeed.DisplayName}");
             pickupObj.transform.position = transform.position;
-            
+
             if (randomSeed.Icon != null)
             {
                 SpriteRenderer sr = pickupObj.AddComponent<SpriteRenderer>();
@@ -193,4 +197,6 @@ public class Enemy_Health : MonoBehaviour
         pickup.SetItem(randomSeed);
         Debug.Log($"Special enemy dropped seed: {randomSeed.DisplayName}");
     }
+
+
 }

@@ -21,16 +21,57 @@ public class Upgrades : MonoBehaviour
     public float attackSpeedBonusPerLevel = 0.1f;
     public float jumpHeightBonusPerLevel = 0.5f;
 
-    public float HealthLevel = 1;
-    public float HealthCost = 5;
-    public float DamageLevel = 1;
-    public float DamageCost = 5;
-    public float AttackSpeedLevel = 1;
-    public float AttackSpeedCost = 5;
-    public float SpeedLevel = 1;
-    public float SpeedCost = 5;
-    public float JumpHeightLevel = 1;
-    public float JumpHeightCost = 5;
+    [SerializeField] private float healthLevel = 1;
+    [SerializeField] private float healthCost = 5;
+    [SerializeField] private float damageLevel = 1;
+    [SerializeField] private float damageCost = 5;
+    [SerializeField] private float attackSpeedLevel = 1;
+    [SerializeField] private float attackSpeedCost = 5;
+    [SerializeField] private float speedLevel = 1;
+    [SerializeField] private float speedCost = 5;
+    [SerializeField] private float jumpHeightLevel = 1;
+    [SerializeField] private float jumpHeightCost = 5;
+
+    // Public properties for backward compatibility
+    public float HealthLevel { get => healthLevel; set => healthLevel = value; }
+    public float HealthCost { get => healthCost; set => healthCost = value; }
+    public float DamageLevel { get => damageLevel; set => damageLevel = value; }
+    public float DamageCost { get => damageCost; set => damageCost = value; }
+    public float AttackSpeedLevel { get => attackSpeedLevel; set => attackSpeedLevel = value; }
+    public float AttackSpeedCost { get => attackSpeedCost; set => attackSpeedCost = value; }
+    public float SpeedLevel { get => speedLevel; set => speedLevel = value; }
+    public float SpeedCost { get => speedCost; set => speedCost = value; }
+    public float JumpHeightLevel { get => jumpHeightLevel; set => jumpHeightLevel = value; }
+    public float JumpHeightCost { get => jumpHeightCost; set => jumpHeightCost = value; }
+
+    private static Upgrades instance;
+
+    private void Awake()
+    {
+        // Singleton pattern - persist upgrade data across scenes
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+            Debug.Log("Upgrades manager made persistent");
+        }
+        else
+        {
+            // Transfer UI references to the existing instance if this is a duplicate
+            instance.HealthLevelText = HealthLevelText;
+            instance.DamageLevelText = DamageLevelText;
+            instance.AttackSpeedLevelText = AttackSpeedLevelText;
+            instance.SpeedLevelText = SpeedLevelText;
+            instance.JumpHeightLevelText = JumpHeightLevelText;
+            instance.HealthCostText = HealthCostText;
+            instance.DamageCostText = DamageCostText;
+            instance.AttackSpeedCostText = AttackSpeedCostText;
+            instance.SpeedCostText = SpeedCostText;
+            instance.JumpHeightCostText = JumpHeightCostText;
+            Destroy(gameObject);
+            return;
+        }
+    }
 
     private void Start()
     {
@@ -76,10 +117,10 @@ public class Upgrades : MonoBehaviour
                     Debug.Log($"Not enough pebbles! Need {HealthCost}, have {PebbleManager.Instance.pebbles}");
                     return;
                 }
-                
+
                 // Deduct cost
                 PebbleManager.Instance.pebbles -= (int)HealthCost;
-                
+
                 if (HealthLevel >= 2)
                 {
                     HealthCost = (int)(5 * Mathf.Pow(1.2f, HealthLevel));
@@ -102,9 +143,9 @@ public class Upgrades : MonoBehaviour
                     Debug.Log($"Not enough pebbles! Need {DamageCost}, have {PebbleManager.Instance.pebbles}");
                     return;
                 }
-                
+
                 PebbleManager.Instance.pebbles -= (int)DamageCost;
-                
+
                 if (DamageLevel >= 2)
                 {
                     DamageCost = (int)(5 * Mathf.Pow(1.2f, DamageLevel));
@@ -126,9 +167,9 @@ public class Upgrades : MonoBehaviour
                     Debug.Log($"Not enough pebbles! Need {AttackSpeedCost}, have {PebbleManager.Instance.pebbles}");
                     return;
                 }
-                
+
                 PebbleManager.Instance.pebbles -= (int)AttackSpeedCost;
-                
+
                 if (AttackSpeedLevel >= 2)
                 {
                     AttackSpeedCost = (int)(5 * Mathf.Pow(1.2f, AttackSpeedLevel));
@@ -150,9 +191,9 @@ public class Upgrades : MonoBehaviour
                     Debug.Log($"Not enough pebbles! Need {SpeedCost}, have {PebbleManager.Instance.pebbles}");
                     return;
                 }
-                
+
                 PebbleManager.Instance.pebbles -= (int)SpeedCost;
-                
+
                 if (SpeedLevel >= 2)
                 {
                     SpeedCost = (int)(5 * Mathf.Pow(1.2f, SpeedLevel));
@@ -170,9 +211,9 @@ public class Upgrades : MonoBehaviour
                     Debug.Log($"Not enough pebbles! Need {JumpHeightCost}, have {PebbleManager.Instance.pebbles}");
                     return;
                 }
-                
+
                 PebbleManager.Instance.pebbles -= (int)JumpHeightCost;
-                
+
                 if (JumpHeightLevel >= 2)
                 {
                     JumpHeightCost = (int)(5 * Mathf.Pow(1.2f, JumpHeightLevel));
@@ -189,7 +230,7 @@ public class Upgrades : MonoBehaviour
                 }
                 break;
         }
-        
+
         // Update UI after purchase
         if (PebbleUI.Instance != null)
         {

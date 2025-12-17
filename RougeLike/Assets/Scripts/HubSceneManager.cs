@@ -46,6 +46,8 @@ public class HubSceneManager : MonoBehaviour
             }
         }
 
+
+
         Debug.Log("Hub scene initialized - Game Over hidden, Health Bar and Pebble Manager visible");
     }
 }

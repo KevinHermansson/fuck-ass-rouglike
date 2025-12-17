@@ -18,6 +18,14 @@ public class Player_Stats : MonoBehaviour
     public float BaseAttackSpeed = 1f;
     public float BaseJumpHeight = 8f;
 
+    // Bonus Stats (serialized to persist across scenes)
+    [Header("Stat Bonuses (Persist Across Scenes)")]
+    [SerializeField] private float speedBonus;
+    [SerializeField] private int maxHealthBonus;
+    [SerializeField] private int attackDamageBonus;
+    [SerializeField] private float attackSpeedBonus;
+    [SerializeField] private float jumpHeightBonus;
+
     // Current Stats (read-only in inspector)
     [Header("Current Stats (Base + Bonuses)")]
     [SerializeField] private float currentMoveSpeed;
@@ -26,11 +34,31 @@ public class Player_Stats : MonoBehaviour
     [SerializeField] private float currentAttackSpeed;
     [SerializeField] private float currentJumpHeight;
 
-    public float SpeedBonus { get; set; }
-    public int MaxHealthBonus { get; set; }
-    public int AttackDamageBonus { get; set; }
-    public float AttackSpeedBonus { get; set; }
-    public float JumpHeightBonus { get; set; }
+    public float SpeedBonus
+    {
+        get => speedBonus;
+        set => speedBonus = value;
+    }
+    public int MaxHealthBonus
+    {
+        get => maxHealthBonus;
+        set => maxHealthBonus = value;
+    }
+    public int AttackDamageBonus
+    {
+        get => attackDamageBonus;
+        set => attackDamageBonus = value;
+    }
+    public float AttackSpeedBonus
+    {
+        get => attackSpeedBonus;
+        set => attackSpeedBonus = value;
+    }
+    public float JumpHeightBonus
+    {
+        get => jumpHeightBonus;
+        set => jumpHeightBonus = value;
+    }
 
     public float MoveSpeed => BaseMoveSpeed + SpeedBonus;
     public int MaxHealth => BaseMaxHealth + MaxHealthBonus;
