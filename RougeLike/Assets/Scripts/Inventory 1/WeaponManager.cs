@@ -9,6 +9,7 @@ public class WeaponManager : MonoBehaviour
     
     [Header("Debug")]
     [SerializeField] private bool showMeleeCone = false;
+    [SerializeField] private float defaultMeleeConeDuration = 0.2f; // Duration for default melee attacks
     
     private Player_Stats playerStats;
     private float lastDirection = 1f;
@@ -342,28 +343,83 @@ public class WeaponManager : MonoBehaviour
         int damage = CalculateDamage();
         float range = currentWeapon.meleeRange;
         float halfArc = currentWeapon.meleeSwingArc * 0.5f;
-        Vector2 forward = new Vector2(lastDirection, 0f);
+        float duration = currentWeapon.meleeConeDuration > 0 ? currentWeapon.meleeConeDuration : 0.2f;
+        
+        // Track which enemies have been hit to avoid multiple hits
+        System.Collections.Generic.HashSet<GameObject> hitEnemies = new System.Collections.Generic.HashSet<GameObject>();
+        
+        float elapsed = 0f;
         
         // Use the provided origin position (player center or weapon position)
         Vector2 conePos = (Vector2)coneOrigin;
         
-        // Check for enemies in cone area
-        Collider2D[] hits = Physics2D.OverlapCircleAll(conePos, range, enemyLayers);
-        
-        foreach (Collider2D hit in hits)
+        // Continuously check for enemies over the duration - check every frame for consistency
+        while (elapsed < duration)
         {
-            Vector2 toTarget = ((Vector2)hit.transform.position - conePos).normalized;
+            elapsed += Time.deltaTime;
             
-            // Check if enemy is in front of player
-            if (Vector2.Dot(forward, toTarget) > 0f)
+            // Update forward direction every frame in case player changes direction
+            Vector2 forward = new Vector2(lastDirection, 0f);
+            
+            // Update cone position to follow player/weapon
+            if (weaponVisual != null && weaponSpriteRenderer != null && weaponSpriteRenderer.sprite != null)
             {
-                // Check if enemy is within the swing arc
-                float angle = Vector2.SignedAngle(forward, toTarget);
-                if (Mathf.Abs(angle) <= halfArc)
+                conePos = (Vector2)weaponVisual.transform.position;
+            }
+            else
+            {
+                conePos = (Vector2)transform.position;
+            }
+            
+            // Update cone GameObject position for visual debug
+            if (cone != null)
+            {
+                cone.transform.position = conePos;
+            }
+            
+            // Check for enemies every frame for maximum consistency
+            Collider2D[] hits = Physics2D.OverlapCircleAll(conePos, range, enemyLayers);
+            
+            foreach (Collider2D hit in hits)
+            {
+                // Get the root GameObject (in case collider is on a child)
+                GameObject targetObject = hit.transform.root.gameObject;
+                
+                // Skip if already hit (check both the collider's GameObject and root)
+                if (hitEnemies.Contains(hit.gameObject) || hitEnemies.Contains(targetObject))
+                    continue;
+                
+                Vector2 toTarget = ((Vector2)hit.transform.position - conePos).normalized;
+                
+                // Check if enemy is in front of player
+                if (Vector2.Dot(forward, toTarget) > 0f)
                 {
-                    ApplyDamage(hit.gameObject, damage);
+                    // Check if enemy is within the swing arc
+                    float angle = Vector2.SignedAngle(forward, toTarget);
+                    if (Mathf.Abs(angle) <= halfArc)
+                    {
+                        // Try to apply damage - use the collider's GameObject first, then root
+                        bool damageApplied = false;
+                        if (ApplyDamage(hit.gameObject, damage))
+                        {
+                            damageApplied = true;
+                        }
+                        else if (hit.gameObject != targetObject && ApplyDamage(targetObject, damage))
+                        {
+                            damageApplied = true;
+                        }
+                        
+                        if (damageApplied)
+                        {
+                            // Track both to avoid duplicate hits
+                            hitEnemies.Add(hit.gameObject);
+                            hitEnemies.Add(targetObject);
+                        }
+                    }
                 }
             }
+            
+            yield return null;
         }
         
         // Clean up after a short delay (longer if debug is enabled)
@@ -464,27 +520,82 @@ public class WeaponManager : MonoBehaviour
         int damage = playerStats != null ? playerStats.AttackDamage : 20;
         float range = 0.5f;
         float halfArc = 45f; // 90 degree arc
-        Vector2 forward = new Vector2(lastDirection, 0f);
+        float duration = defaultMeleeConeDuration;
+        
+        // Track which enemies have been hit to avoid multiple hits
+        System.Collections.Generic.HashSet<GameObject> hitEnemies = new System.Collections.Generic.HashSet<GameObject>();
+        
+        float elapsed = 0f;
         
         // Use the provided origin position (player center or weapon position)
         Vector2 conePos = (Vector2)coneOrigin;
         
-        // Check for enemies in cone area
-        Collider2D[] hits = Physics2D.OverlapCircleAll(conePos, range, enemyLayers);
-        
-        foreach (Collider2D hit in hits)
+        // Continuously check for enemies over the duration - check every frame for consistency
+        while (elapsed < duration)
         {
-            Vector2 toTarget = ((Vector2)hit.transform.position - conePos).normalized;
+            elapsed += Time.deltaTime;
             
-            // Check if enemy is in front and within arc
-            if (Vector2.Dot(forward, toTarget) > 0f)
+            // Update forward direction every frame in case player changes direction
+            Vector2 forward = new Vector2(lastDirection, 0f);
+            
+            // Update cone position to follow player/weapon
+            if (weaponVisual != null && weaponSpriteRenderer != null && weaponSpriteRenderer.sprite != null)
             {
-                float angle = Vector2.SignedAngle(forward, toTarget);
-                if (Mathf.Abs(angle) <= halfArc)
+                conePos = (Vector2)weaponVisual.transform.position;
+            }
+            else
+            {
+                conePos = (Vector2)transform.position;
+            }
+            
+            // Update cone GameObject position for visual debug
+            if (cone != null)
+            {
+                cone.transform.position = conePos;
+            }
+            
+            // Check for enemies every frame for maximum consistency
+            Collider2D[] hits = Physics2D.OverlapCircleAll(conePos, range, enemyLayers);
+            
+            foreach (Collider2D hit in hits)
+            {
+                // Get the root GameObject (in case collider is on a child)
+                GameObject targetObject = hit.transform.root.gameObject;
+                
+                // Skip if already hit (check both the collider's GameObject and root)
+                if (hitEnemies.Contains(hit.gameObject) || hitEnemies.Contains(targetObject))
+                    continue;
+                
+                Vector2 toTarget = ((Vector2)hit.transform.position - conePos).normalized;
+                
+                // Check if enemy is in front and within arc
+                if (Vector2.Dot(forward, toTarget) > 0f)
                 {
-                    ApplyDamage(hit.gameObject, damage);
+                    float angle = Vector2.SignedAngle(forward, toTarget);
+                    if (Mathf.Abs(angle) <= halfArc)
+                    {
+                        // Try to apply damage - use the collider's GameObject first, then root
+                        bool damageApplied = false;
+                        if (ApplyDamage(hit.gameObject, damage))
+                        {
+                            damageApplied = true;
+                        }
+                        else if (hit.gameObject != targetObject && ApplyDamage(targetObject, damage))
+                        {
+                            damageApplied = true;
+                        }
+                        
+                        if (damageApplied)
+                        {
+                            // Track both to avoid duplicate hits
+                            hitEnemies.Add(hit.gameObject);
+                            hitEnemies.Add(targetObject);
+                        }
+                    }
                 }
             }
+            
+            yield return null;
         }
         
         // Clean up after a short delay (longer if debug is enabled)
@@ -517,27 +628,31 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    private void ApplyDamage(GameObject target, int damage)
+    private bool ApplyDamage(GameObject target, int damage)
     {
-        Enemy_Health health = target.GetComponent<Enemy_Health>();
+        // Try to get health component from target or its parents
+        Enemy_Health health = target.GetComponentInParent<Enemy_Health>();
         if (health != null)
         {
             health.TakeDamage(damage);
-            return;
+            return true;
         }
 
-        MinibossHealth bossHealth = target.GetComponent<MinibossHealth>();
+        MinibossHealth bossHealth = target.GetComponentInParent<MinibossHealth>();
         if (bossHealth != null)
         {
             bossHealth.TakeDamage(damage);
-            return;
+            return true;
         }
 
-        BossHeart heartHealth = target.GetComponent<BossHeart>();
+        BossHeart heartHealth = target.GetComponentInParent<BossHeart>();
         if (heartHealth != null)
         {
             heartHealth.TakeDamage(damage);
+            return true;
         }
+        
+        return false;
     }
 
     private void CreateConeVisual(GameObject cone, float range, float arc)

@@ -20,6 +20,7 @@ public class WeaponData : ScriptableObject
     public float meleeRange = 0.5f;
     public float meleeDamageMultiplier = 1f; // Multiplies base attack damage
     public float meleeSwingArc = 90f; // Arc in degrees (for area attacks)
+    public float meleeConeDuration = 0.2f; // How long the damage cone stays active (in seconds)
 
     [Header("General Properties")]
     public int baseDamage = 20; // Base damage (gets multiplied by player stats)
