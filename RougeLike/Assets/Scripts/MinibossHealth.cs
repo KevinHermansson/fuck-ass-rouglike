@@ -19,6 +19,8 @@ public class MinibossHealth : MonoBehaviour
     [SerializeField] private GameObject itemPickupPrefab; // Prefab for item pickup
     [SerializeField] private float itemDropChance = 0.5f; // 50% chance to drop an item
     [SerializeField] private bool dropWeapon = true; // If true, drops weapon; if false, drops seed
+    [SerializeField] private ItemType2 guaranteedWeapon; // If assigned, this weapon will always drop (overrides random)
+    [SerializeField] private ItemType2 guaranteedSeed; // If assigned, this seed will always drop (overrides random)
 
     private SpriteRenderer spriteRenderer;
     private bool isFlashing = false;
@@ -69,12 +71,6 @@ public class MinibossHealth : MonoBehaviour
 
     void Update()
     {
-        // Debug: Press I to test damage
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            TakeDamage(10);
-        }
-
         // Press R to reset color if stuck red
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -180,26 +176,44 @@ public class MinibossHealth : MonoBehaviour
 
         if (dropWeapon)
         {
-            // Drop a random weapon
-            ItemType2[] allWeapons = UnityEngine.Resources.FindObjectsOfTypeAll<ItemType2>()
-                .Where(item => item.Category == ItemCategory.Weapon)
-                .ToArray();
-
-            if (allWeapons.Length > 0)
+            // Check for guaranteed weapon first
+            if (guaranteedWeapon != null && guaranteedWeapon.Category == ItemCategory.Weapon)
             {
-                itemToDrop = allWeapons[Random.Range(0, allWeapons.Length)];
+                itemToDrop = guaranteedWeapon;
+                Debug.Log($"Dropping guaranteed weapon: {guaranteedWeapon.DisplayName}");
+            }
+            else
+            {
+                // Drop a random weapon
+                ItemType2[] allWeapons = UnityEngine.Resources.FindObjectsOfTypeAll<ItemType2>()
+                    .Where(item => item.Category == ItemCategory.Weapon)
+                    .ToArray();
+
+                if (allWeapons.Length > 0)
+                {
+                    itemToDrop = allWeapons[Random.Range(0, allWeapons.Length)];
+                }
             }
         }
         else
         {
-            // Drop a random seed
-            ItemType2[] allSeeds = UnityEngine.Resources.FindObjectsOfTypeAll<ItemType2>()
-                .Where(item => item.Category == ItemCategory.Seed)
-                .ToArray();
-
-            if (allSeeds.Length > 0)
+            // Check for guaranteed seed first
+            if (guaranteedSeed != null && guaranteedSeed.Category == ItemCategory.Seed)
             {
-                itemToDrop = allSeeds[Random.Range(0, allSeeds.Length)];
+                itemToDrop = guaranteedSeed;
+                Debug.Log($"Dropping guaranteed seed: {guaranteedSeed.DisplayName}");
+            }
+            else
+            {
+                // Drop a random seed
+                ItemType2[] allSeeds = UnityEngine.Resources.FindObjectsOfTypeAll<ItemType2>()
+                    .Where(item => item.Category == ItemCategory.Seed)
+                    .ToArray();
+
+                if (allSeeds.Length > 0)
+                {
+                    itemToDrop = allSeeds[Random.Range(0, allSeeds.Length)];
+                }
             }
         }
 

@@ -308,39 +308,51 @@ public class WeaponManager : MonoBehaviour
     }
 
     private void SpawnMeleeCone()
-{
-    // Use attackPoint as the origin of the melee
-    Transform origin = attackPoint != null ? attackPoint : transform;
+    {
+        // Spawn cone at player center (or weapon position if available)
+        Vector3 spawnPosition;
+        
+        // Option 1: Use weapon visual position if available
+        if (weaponVisual != null && weaponSpriteRenderer != null && weaponSpriteRenderer.sprite != null)
+        {
+            spawnPosition = weaponVisual.transform.position;
+        }
+        // Option 2: Use player center (transform.position)
+        else
+        {
+            spawnPosition = transform.position;
+        }
 
-    GameObject cone = new GameObject("MeleeCone");
+        GameObject cone = new GameObject("MeleeCone");
+        
+        // Don't parent to anything - position it in world space
+        cone.transform.position = spawnPosition;
+        cone.transform.rotation = Quaternion.identity;
 
-    // Parent to the origin so it moves with the player/weapon
-    cone.transform.SetParent(origin);
-    cone.transform.localPosition = Vector3.zero;
-    cone.transform.localRotation = Quaternion.identity;
+        // Visual debug cone
+        CreateConeVisual(cone, currentWeapon.meleeRange, currentWeapon.meleeSwingArc);
 
-    // Visual debug cone
-    CreateConeVisual(cone, currentWeapon.meleeRange, currentWeapon.meleeSwingArc);
-
-    // Use the origin position for damage checks
-    StartCoroutine(HandleMeleeCone(cone));
-}
+        // Use the spawn position for damage checks
+        StartCoroutine(HandleMeleeCone(cone, spawnPosition));
+    }
 
 
-    private IEnumerator HandleMeleeCone(GameObject cone)
+    private IEnumerator HandleMeleeCone(GameObject cone, Vector3 coneOrigin)
     {
         int damage = CalculateDamage();
         float range = currentWeapon.meleeRange;
         float halfArc = currentWeapon.meleeSwingArc * 0.5f;
         Vector2 forward = new Vector2(lastDirection, 0f);
-        Vector3 conePos = cone.transform.position;
+        
+        // Use the provided origin position (player center or weapon position)
+        Vector2 conePos = (Vector2)coneOrigin;
         
         // Check for enemies in cone area
         Collider2D[] hits = Physics2D.OverlapCircleAll(conePos, range, enemyLayers);
         
         foreach (Collider2D hit in hits)
         {
-            Vector2 toTarget = ((Vector2)hit.transform.position - (Vector2)conePos).normalized;
+            Vector2 toTarget = ((Vector2)hit.transform.position - conePos).normalized;
             
             // Check if enemy is in front of player
             if (Vector2.Dot(forward, toTarget) > 0f)
@@ -425,42 +437,44 @@ public class WeaponManager : MonoBehaviour
 
     private void SpawnDefaultMeleeCone()
     {
-        // Calculate spawn position (same as weapon melee)
+        // Spawn at player center (or weapon position if available)
         Vector3 spawnPos;
         if (weaponVisual != null && weaponSpriteRenderer != null && weaponSpriteRenderer.sprite != null)
         {
-            float weaponWidth = weaponSpriteRenderer.bounds.size.x;
-            spawnPos = weaponVisual.transform.position + Vector3.right * (weaponWidth * 0.5f * lastDirection);
+            spawnPos = weaponVisual.transform.position;
         }
         else
         {
-            spawnPos = attackPoint != null ? attackPoint.position : transform.position;
+            spawnPos = transform.position; // Player center
         }
         
         GameObject cone = new GameObject("DefaultMeleeCone");
-        // Position at weapon (cone will extend from here)
+        // Position at player center or weapon (cone will extend from here)
         cone.transform.position = spawnPos;
+        cone.transform.rotation = Quaternion.identity;
         
         // Create visual debug representation (always created, visibility controlled by flag)
         CreateConeVisual(cone, 0.5f, 90f); // Default range and arc
         
-        StartCoroutine(HandleDefaultMeleeCone(cone));
+        StartCoroutine(HandleDefaultMeleeCone(cone, spawnPos));
     }
 
-    private IEnumerator HandleDefaultMeleeCone(GameObject cone)
+    private IEnumerator HandleDefaultMeleeCone(GameObject cone, Vector3 coneOrigin)
     {
         int damage = playerStats != null ? playerStats.AttackDamage : 20;
         float range = 0.5f;
         float halfArc = 45f; // 90 degree arc
         Vector2 forward = new Vector2(lastDirection, 0f);
-        Vector3 conePos = cone.transform.position;
+        
+        // Use the provided origin position (player center or weapon position)
+        Vector2 conePos = (Vector2)coneOrigin;
         
         // Check for enemies in cone area
         Collider2D[] hits = Physics2D.OverlapCircleAll(conePos, range, enemyLayers);
         
         foreach (Collider2D hit in hits)
         {
-            Vector2 toTarget = ((Vector2)hit.transform.position - (Vector2)conePos).normalized;
+            Vector2 toTarget = ((Vector2)hit.transform.position - conePos).normalized;
             
             // Check if enemy is in front and within arc
             if (Vector2.Dot(forward, toTarget) > 0f)
@@ -592,9 +606,11 @@ public class WeaponManager : MonoBehaviour
         cone.transform.localScale = new Vector3(scaleX, scaleY, 1f);
         
         // Rotate to face the correct direction
-        // Rotate so the cone extends along +X / -X from the pivot
-    float rotationAngle = lastDirection > 0 ? -90f : 90f;
-    cone.transform.localRotation = Quaternion.Euler(0f, 0f, rotationAngle);
+        // Sprite pivot is at bottom center (0.5, 0), so we rotate to extend forward
+        // When facing right (lastDirection = 1): rotate -90 to point right (+X)
+        // When facing left (lastDirection = -1): rotate 90 to point left (-X)
+        float rotationAngle = lastDirection > 0 ? -90f : 90f;
+        cone.transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
 
         // Make visible/invisible based on debug flag
         sr.enabled = showMeleeCone;

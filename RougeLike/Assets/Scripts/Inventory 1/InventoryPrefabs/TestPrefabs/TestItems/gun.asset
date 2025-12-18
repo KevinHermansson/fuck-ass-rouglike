@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc51d87417f740f4dbc969b7b28461bf, type: 3}
+  m_Name: gun
+  m_EditorClassIdentifier: Assembly-CSharp::ItemType2
+  Id: gun
+  DisplayName: Gun
+  Icon: {fileID: 6879118450950661895, guid: bd00b497e579d8b44baa7a2a71d676ff, type: 3}
+  Category: 2
+  Description: Shoots a bullet nice for getting plants down
+  Effect2: {fileID: 0}
+  weaponData: {fileID: 11400000, guid: fbd474a9bbac1b74f8ec3007249cd5a7, type: 2}

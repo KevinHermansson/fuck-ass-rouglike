@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc51d87417f740f4dbc969b7b28461bf, type: 3}
+  m_Name: HealthSeed
+  m_EditorClassIdentifier: Assembly-CSharp::ItemType2
+  Id: Seed4
+  DisplayName: Health Seed
+  Icon: {fileID: -1287317713476511213, guid: e3f34cbdddb95a0409383d4ea6588b3d, type: 3}
+  Category: 0
+  Description: Makes the harvester slighty healthier
+  Effect2: {fileID: 11400000, guid: 7b825d3a1fea1fa4fa6e5c82aed9dc15, type: 2}
+  weaponData: {fileID: 0}
